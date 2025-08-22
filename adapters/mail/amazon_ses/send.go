@@ -6,21 +6,12 @@ import (
 	"fmt"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
-	"github.com/aws/aws-sdk-go-v2/config"
-	"github.com/aws/aws-sdk-go-v2/credentials"
 	"github.com/aws/aws-sdk-go-v2/service/sesv2"
 	"github.com/aws/aws-sdk-go-v2/service/sesv2/types"
 	"github.com/gonstruct/providers/entities/mailables"
 )
 
 func (adapter Adapter) Send(context context.Context, envelope mailables.Envelope, body bytes.Buffer) error {
-	cfg, err := config.LoadDefaultConfig(context,
-		config.WithRegion(adapter.Region),
-		config.WithCredentialsProvider(credentials.NewStaticCredentialsProvider(adapter.Username, adapter.Password, "")))
-	if err != nil {
-		return err
-	}
-
 	message := &sesv2.SendEmailInput{}
 
 	var subject *types.Content
@@ -84,6 +75,14 @@ func (adapter Adapter) Send(context context.Context, envelope mailables.Envelope
 		},
 	}
 
-	_, err = sesv2.NewFromConfig(cfg).SendEmail(context, message)
-	return err
+	client, err := adapter.NewClient()
+	if err != nil {
+		return fmt.Errorf("failed to create SES client: %w", err)
+	}
+
+	if _, err := client.SendEmail(context, message); err != nil {
+		return fmt.Errorf("failed to send email: %w", err)
+	}
+
+	return nil
 }

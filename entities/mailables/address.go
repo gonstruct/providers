@@ -2,8 +2,10 @@ package mailables
 
 import "net/mail"
 
-type address = mail.Address
-type addressSlice []*address
+type (
+	address      = mail.Address
+	addressSlice []*address
+)
 
 func (addresses addressSlice) String() []string {
 	stringAddresses := make([]string, len(addresses))
