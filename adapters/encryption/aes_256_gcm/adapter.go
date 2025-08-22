@@ -8,5 +8,6 @@ type Adapter struct {
 func (encrypter Adapter) Keys() [][]byte {
 	keys := [][]byte{encrypter.Key()}
 	keys = append(keys, encrypter.PreviousKeys()...)
+
 	return keys
 }

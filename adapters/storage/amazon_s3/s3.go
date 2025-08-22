@@ -22,7 +22,9 @@ func (adapter Adapter) NewClient(context context.Context) (*s3.Client, error) {
 	cfg, err := config.LoadDefaultConfig(
 		context,
 		config.WithRegion(adapter.Region),
-		config.WithCredentialsProvider(credentials.NewStaticCredentialsProvider(adapter.AccessKeyID, adapter.SecretAccessKey, "")),
+		config.WithCredentialsProvider(
+			credentials.NewStaticCredentialsProvider(adapter.AccessKeyID, adapter.SecretAccessKey, ""),
+		),
 	)
 	if err != nil {
 		return nil, err

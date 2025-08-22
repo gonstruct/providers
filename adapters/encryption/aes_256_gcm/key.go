@@ -4,10 +4,15 @@ import (
 	"crypto/rand"
 )
 
+const (
+	KeySize = 32 // 256 bits
+)
+
 func (encrypter Adapter) GenerateKey() ([]byte, error) {
-	key := make([]byte, 32) // AES-256 requires a 32-byte key
+	key := make([]byte, KeySize)
 	if _, err := rand.Read(key); err != nil {
 		return nil, err
 	}
+
 	return key, nil
 }
