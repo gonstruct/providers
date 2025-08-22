@@ -17,10 +17,12 @@ type Adapter struct {
 	Password string
 }
 
-func (adapter Adapter) NewClient() (*sesv2.Client, error) {
-	cfg, err := config.LoadDefaultConfig(context.TODO(),
+func (adapter Adapter) NewClient(context context.Context) (*sesv2.Client, error) {
+	cfg, err := config.LoadDefaultConfig(
+		context,
 		config.WithRegion(adapter.Region),
-		config.WithCredentialsProvider(credentials.NewStaticCredentialsProvider(adapter.Username, adapter.Password, "")))
+		config.WithCredentialsProvider(credentials.NewStaticCredentialsProvider(adapter.Username, adapter.Password, "")),
+	)
 	if err != nil {
 		return nil, fmt.Errorf("failed to load AWS config: %w", err)
 	}

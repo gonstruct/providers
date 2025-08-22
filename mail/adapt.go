@@ -10,12 +10,12 @@ import (
 var globalProvider *provider
 
 type provider struct {
-	adapter         contracts.MailAdapter
+	adapter         contracts.Mail
 	templates       embed.FS
 	defaultEnvelope *mailables.Envelope
 }
 
-func Adapt(adapter contracts.MailAdapter, options ...func(*provider)) {
+func Adapt(adapter contracts.Mail, options ...func(*provider)) {
 	provider := &provider{
 		adapter: adapter,
 	}

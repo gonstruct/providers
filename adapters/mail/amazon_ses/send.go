@@ -76,7 +76,7 @@ func (adapter Adapter) Send(context context.Context, input entities.MailInput) e
 		},
 	}
 
-	client, err := adapter.NewClient()
+	client, err := adapter.NewClient(context)
 	if err != nil {
 		return fmt.Errorf("failed to create SES client: %w", err)
 	}

@@ -6,6 +6,6 @@ import (
 	"github.com/gonstruct/providers/entities"
 )
 
-type MailAdapter interface {
+type Mail interface {
 	Send(context context.Context, input entities.MailInput) error
 }

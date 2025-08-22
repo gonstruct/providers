@@ -10,7 +10,7 @@ import (
 
 type options struct {
 	Context         context.Context
-	Adapter         contracts.MailAdapter
+	Adapter         contracts.Mail
 	Templates       embed.FS
 	DefaultEnvelope *mailables.Envelope
 }
@@ -38,7 +38,7 @@ func WithContext(context context.Context) Option {
 	}
 }
 
-func WithAdapter(adapter contracts.MailAdapter) Option {
+func WithAdapter(adapter contracts.Mail) Option {
 	return func(options *options) {
 		options.Adapter = adapter
 	}
