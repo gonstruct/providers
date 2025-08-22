@@ -33,16 +33,25 @@ func GenerateKey(format keyFormat, optionSlice ...Option) (string, error) {
 	}
 }
 
-func ParseKeys(keys ...string) [][]byte {
+func ParseKeys(keys ...string) ([][]byte, error) {
 	byteKeys := make([][]byte, 0, len(keys))
 
 	for _, key := range keys {
 		parsedKey, err := ParseKey(key)
 		if err != nil {
-			continue
+			return nil, err
 		}
 
 		byteKeys = append(byteKeys, parsedKey)
+	}
+
+	return byteKeys, nil
+}
+
+func MustParseKeys(keys ...string) [][]byte {
+	byteKeys, err := ParseKeys(keys...)
+	if err != nil {
+		panic(err)
 	}
 
 	return byteKeys
@@ -64,4 +73,13 @@ func ParseKey(encoded string) ([]byte, error) {
 	default:
 		return nil, fmt.Errorf("unsupported key format: %s", splitted[0])
 	}
+}
+
+func MustParseKey(encoded string) []byte {
+	key, err := ParseKey(encoded)
+	if err != nil {
+		panic(err)
+	}
+
+	return key
 }

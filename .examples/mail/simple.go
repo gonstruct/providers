@@ -6,9 +6,9 @@ import (
 
 	"github.com/gonstruct/providers/adapters/mail/amazon_ses"
 	"github.com/gonstruct/providers/adapters/mail/smtp"
+	"github.com/gonstruct/providers/entities/mailables"
 	"github.com/gonstruct/providers/facades"
-	"github.com/gonstruct/providers/providers/mail"
-	"github.com/gonstruct/providers/providers/mail/mailables"
+	"github.com/gonstruct/providers/mail"
 )
 
 func VerificationMail(data any) *facades.Mailable[verificationMail] {
@@ -36,22 +36,14 @@ func (v verificationMail) Content() mailables.Content {
 	}
 }
 
-func ExampleSimple() {
-	ctx := context.Background()
-
-	mailable := VerificationMail("hello world")
-	_ = mailable.Send()
-
-	_ = mailable.Send(
-		mail.WithContext(ctx),
-		mail.WithAdapter(&amazon_ses.Adapter{}),
-	)
+func (v verificationMail) Attachments() mailables.AttachmentSlice {
+	return nil
 }
 
 var templates embed.FS
 
-func init() {
-	mail.Provide(
+func Example() {
+	mail.Adapt(
 		&smtp.Adapter{
 			Host:     "smtp.example.com",
 			Port:     587,
@@ -62,5 +54,15 @@ func init() {
 		mail.WithDefaultEnvelope(mailables.Envelope{
 			From: mailables.Address("default@company.com", "Default Company"),
 		}),
+	)
+
+	ctx := context.Background()
+
+	mailable := VerificationMail("hello world")
+	_ = mailable.Send()
+
+	_ = mailable.Send(
+		mail.WithContext(ctx),
+		mail.WithAdapter(&amazon_ses.Adapter{}),
 	)
 }
