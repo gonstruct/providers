@@ -27,8 +27,8 @@ type Storage interface {
 	MimeType(ctx context.Context, path string) (string, error)
 
 	// File operations
-	Copy(ctx context.Context, from, to string) error
-	Move(ctx context.Context, from, to string) error
+	Copy(ctx context.Context, from, to string) (*entities.StorageObject, error)
+	Move(ctx context.Context, from, to string) (*entities.StorageObject, error)
 	Delete(ctx context.Context, paths ...string) error
 
 	// Visibility

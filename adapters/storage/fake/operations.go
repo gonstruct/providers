@@ -38,12 +38,9 @@ func (a *Adapter) PutFile(ctx context.Context, input entities.StorageInput) (*en
 	a.mu.Unlock()
 
 	return &entities.StorageObject{
-		Name:         input.Name(),
-		Path:         path,
-		MimeType:     "application/octet-stream",
-		Size:         int64(len(content)),
-		LastModified: now,
-		Visibility:   entities.VisibilityPrivate,
+		Name:     input.Name(),
+		Path:     path,
+		MimeType: "application/octet-stream",
 	}, nil
 }
 
@@ -189,9 +186,9 @@ func (a *Adapter) MimeType(ctx context.Context, path string) (string, error) {
 	return f.MimeType, nil
 }
 
-func (a *Adapter) Copy(ctx context.Context, from, to string) error {
+func (a *Adapter) Copy(ctx context.Context, from, to string) (*entities.StorageObject, error) {
 	if a.CopyError != nil {
-		return a.CopyError
+		return nil, a.CopyError
 	}
 
 	a.mu.Lock()
@@ -201,22 +198,27 @@ func (a *Adapter) Copy(ctx context.Context, from, to string) error {
 
 	f, ok := a.files[from]
 	if !ok {
-		return ErrFileNotFound
+		return nil, ErrFileNotFound
 	}
 
+	now := time.Now()
 	a.files[to] = &fakeFile{
 		Content:      append([]byte(nil), f.Content...),
 		MimeType:     f.MimeType,
 		Visibility:   f.Visibility,
-		LastModified: time.Now(),
+		LastModified: now,
 	}
 
-	return nil
+	return &entities.StorageObject{
+		Name:     to,
+		Path:     to,
+		MimeType: f.MimeType,
+	}, nil
 }
 
-func (a *Adapter) Move(ctx context.Context, from, to string) error {
+func (a *Adapter) Move(ctx context.Context, from, to string) (*entities.StorageObject, error) {
 	if a.MoveError != nil {
-		return a.MoveError
+		return nil, a.MoveError
 	}
 
 	a.mu.Lock()
@@ -226,13 +228,17 @@ func (a *Adapter) Move(ctx context.Context, from, to string) error {
 
 	f, ok := a.files[from]
 	if !ok {
-		return ErrFileNotFound
+		return nil, ErrFileNotFound
 	}
 
 	a.files[to] = f
 	delete(a.files, from)
 
-	return nil
+	return &entities.StorageObject{
+		Name:     to,
+		Path:     to,
+		MimeType: f.MimeType,
+	}, nil
 }
 
 func (a *Adapter) Delete(ctx context.Context, paths ...string) error {

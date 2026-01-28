@@ -78,12 +78,9 @@ func (a *FakeAdapter) PutFile(ctx context.Context, input entities.StorageInput) 
 	a.mu.Unlock()
 
 	return &entities.StorageObject{
-		Name:         input.Name(),
-		Path:         path,
-		MimeType:     "application/octet-stream",
-		Size:         int64(len(content)),
-		LastModified: now,
-		Visibility:   entities.VisibilityPrivate,
+		Name:     input.Name(),
+		Path:     path,
+		MimeType: "application/octet-stream",
 	}, nil
 }
 

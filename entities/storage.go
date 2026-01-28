@@ -2,7 +2,6 @@ package entities
 
 import (
 	"strings"
-	"time"
 
 	"github.com/gonstruct/providers/entities/file"
 )
@@ -27,10 +26,7 @@ func (i StorageInput) Name() string {
 
 // StorageObject contains metadata about a stored file.
 type StorageObject struct {
-	Name         string
-	Path         string
-	MimeType     string
-	Size         int64
-	LastModified time.Time
-	Visibility   Visibility
+	Name     string
+	Path     string
+	MimeType string
 }

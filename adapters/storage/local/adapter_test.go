@@ -229,7 +229,7 @@ func TestAdapter_Copy(t *testing.T) {
 		t.Fatalf("Put() error = %v", err)
 	}
 
-	if err := adapter.Copy(ctx, from, to); err != nil {
+	if _, err := adapter.Copy(ctx, from, to); err != nil {
 		t.Fatalf("Copy() error = %v", err)
 	}
 
@@ -264,7 +264,7 @@ func TestAdapter_Move(t *testing.T) {
 		t.Fatalf("Put() error = %v", err)
 	}
 
-	if err := adapter.Move(ctx, from, to); err != nil {
+	if _, err := adapter.Move(ctx, from, to); err != nil {
 		t.Fatalf("Move() error = %v", err)
 	}
 

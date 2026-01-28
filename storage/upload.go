@@ -80,13 +80,13 @@ func MimeType(path string, optionSlice ...Option) (string, error) {
 
 // File operations
 
-func Copy(from, to string, optionSlice ...Option) error {
+func Copy(from, to string, optionSlice ...Option) (*entities.StorageObject, error) {
 	options := apply(optionSlice...)
 
 	return options.Adapter.Copy(options.Context, from, to)
 }
 
-func Move(from, to string, optionSlice ...Option) error {
+func Move(from, to string, optionSlice ...Option) (*entities.StorageObject, error) {
 	options := apply(optionSlice...)
 
 	return options.Adapter.Move(options.Context, from, to)
