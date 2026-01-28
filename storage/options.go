@@ -29,9 +29,9 @@ func apply(optionSlice ...Option) *options {
 	return options
 }
 
-func WithContext(context context.Context) Option {
+func WithContext(ctx context.Context) Option {
 	return func(options *options) {
-		options.Context = context
+		options.Context = ctx
 	}
 }
 

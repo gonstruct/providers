@@ -5,7 +5,8 @@ import (
 )
 
 type options struct {
-	Adapter contracts.Encryption
+	Adapter        contracts.Encryption
+	AdditionalData [][]byte
 }
 
 type Option func(*options)
@@ -27,5 +28,14 @@ func apply(optionSlice ...Option) *options {
 func WithAdapter(adapter contracts.Encryption) Option {
 	return func(options *options) {
 		options.Adapter = adapter
+	}
+}
+
+// WithAdditionalData sets the Additional Authenticated Data (AAD) for AES-GCM
+// AAD is authenticated but not encrypted - useful for binding ciphertext to context
+// Example use cases: user ID, record ID, timestamp, etc.
+func WithAdditionalData(aad []byte) Option {
+	return func(options *options) {
+		options.AdditionalData = [][]byte{aad}
 	}
 }

@@ -2,32 +2,33 @@ package smtp
 
 import (
 	"context"
-	"errors"
 	"io"
 
 	"github.com/gonstruct/providers/entities"
+	"github.com/gonstruct/providers/mail"
 	"gopkg.in/gomail.v2"
 )
 
-func (adapter *Adapter) Send(context context.Context, input entities.MailInput) error {
+func (adapter *Adapter) Send(ctx context.Context, input entities.MailInput) error {
+	_ = ctx // gomail doesn't support context, but we accept it for interface compatibility
 	message := gomail.NewMessage()
 
 	if input.Envelope.Subject != "" {
 		message.SetHeader("Subject", input.Envelope.Subject)
 	} else {
-		return errors.New("no subject specified")
+		return mail.Err("validate", mail.ErrNoSubject)
 	}
 
 	if input.Envelope.From != nil {
 		message.SetHeader("From", input.Envelope.From.String())
 	} else {
-		return errors.New("no sender specified")
+		return mail.Err("validate", mail.ErrNoSender)
 	}
 
 	if len(input.Envelope.To) > 0 {
 		message.SetHeader("To", input.Envelope.To.String()...)
 	} else {
-		return errors.New("no recipient(s) specified")
+		return mail.Err("validate", mail.ErrNoRecipients)
 	}
 
 	if input.Envelope.ReplyTo != nil {
@@ -59,7 +60,9 @@ func (adapter *Adapter) Send(context context.Context, input entities.MailInput) 
 
 	message.SetBody("text/html", input.Html.String())
 
-	return gomail.
-		NewDialer(adapter.Host, adapter.Port, adapter.Username, adapter.Password).
-		DialAndSend(message)
+	if err := gomail.NewDialer(adapter.Host, adapter.Port, adapter.Username, adapter.Password).DialAndSend(message); err != nil {
+		return mail.Err("send via SMTP", err)
+	}
+
+	return nil
 }

@@ -1,4 +1,4 @@
-package s3
+package amazon_s3
 
 import (
 	"context"
@@ -18,9 +18,9 @@ type Adapter struct {
 	UsePathStyle    bool
 }
 
-func (adapter Adapter) NewClient(context context.Context) (*s3.Client, error) {
+func (adapter Adapter) NewClient(ctx context.Context) (*s3.Client, error) {
 	cfg, err := config.LoadDefaultConfig(
-		context,
+		ctx,
 		config.WithRegion(adapter.Region),
 		config.WithCredentialsProvider(
 			credentials.NewStaticCredentialsProvider(adapter.AccessKeyID, adapter.SecretAccessKey, ""),

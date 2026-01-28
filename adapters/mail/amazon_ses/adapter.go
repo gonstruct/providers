@@ -17,9 +17,9 @@ type Adapter struct {
 	Password string
 }
 
-func (adapter Adapter) NewClient(context context.Context) (*sesv2.Client, error) {
+func (adapter Adapter) NewClient(ctx context.Context) (*sesv2.Client, error) {
 	cfg, err := config.LoadDefaultConfig(
-		context,
+		ctx,
 		config.WithRegion(adapter.Region),
 		config.WithCredentialsProvider(credentials.NewStaticCredentialsProvider(adapter.Username, adapter.Password, "")),
 	)

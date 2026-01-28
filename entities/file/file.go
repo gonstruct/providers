@@ -2,6 +2,8 @@ package file
 
 import (
 	"bytes"
+	"image"
+	"image/png"
 	"io"
 	"net/http"
 	"path/filepath"
@@ -36,4 +38,14 @@ func FromRequest(request *http.Request, key string) (File, error) {
 	defer file.Close()
 
 	return FromReader(fileHeader.Filename, file), nil
+}
+
+func FromImage(name string, image image.Image) (File, error) {
+	buffer := new(bytes.Buffer)
+	err := png.Encode(buffer, image)
+	if err != nil {
+		return File{}, err
+	}
+
+	return FromBytes(name, buffer.Bytes()), nil
 }

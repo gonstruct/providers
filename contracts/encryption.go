@@ -1,7 +1,10 @@
 package contracts
 
 type Encryption interface {
-	Encrypt(plain []byte) (string, error)
-	Decrypt(base64Cipher string) ([]byte, error)
+	// Encrypt encrypts plain bytes, optionally with additional authenticated data (AAD)
+	Encrypt(plain []byte, additionalData ...[]byte) (string, error)
+	// Decrypt decrypts base64-encoded ciphertext, optionally verifying AAD
+	Decrypt(base64Cipher string, additionalData ...[]byte) ([]byte, error)
+	// GenerateKey generates a new encryption key
 	GenerateKey() ([]byte, error)
 }

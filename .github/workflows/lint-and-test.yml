@@ -1,5 +1,4 @@
 name: Lint and test
-description: Run lint and tests on pull requests
 
 on:
   pull_request:

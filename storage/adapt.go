@@ -20,7 +20,7 @@ func Adapt(adapter contracts.Storage, options ...func(*provider)) {
 	}
 
 	if globalProvider != nil {
-		panic("mail provider already set")
+		panic("storage provider already set")
 	}
 
 	globalProvider = provider
