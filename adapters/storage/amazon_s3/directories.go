@@ -9,7 +9,7 @@ import (
 	"github.com/gonstruct/providers/storage"
 )
 
-// Files returns a list of files in the given directory (non-recursive)
+// Files returns a list of files in the given directory (non-recursive).
 func (adapter Adapter) Files(ctx context.Context, directory string) ([]string, error) {
 	client, err := adapter.NewClient(ctx)
 	if err != nil {
@@ -31,6 +31,7 @@ func (adapter Adapter) Files(ctx context.Context, directory string) ([]string, e
 	}
 
 	var files []string
+
 	for _, obj := range result.Contents {
 		if obj.Key != nil && *obj.Key != prefix {
 			files = append(files, *obj.Key)
@@ -40,7 +41,7 @@ func (adapter Adapter) Files(ctx context.Context, directory string) ([]string, e
 	return files, nil
 }
 
-// AllFiles returns a list of all files in the directory and subdirectories
+// AllFiles returns a list of all files in the directory and subdirectories.
 func (adapter Adapter) AllFiles(ctx context.Context, directory string) ([]string, error) {
 	client, err := adapter.NewClient(ctx)
 	if err != nil {
@@ -53,6 +54,7 @@ func (adapter Adapter) AllFiles(ctx context.Context, directory string) ([]string
 	}
 
 	var files []string
+
 	paginator := s3.NewListObjectsV2Paginator(client, &s3.ListObjectsV2Input{
 		Bucket: aws.String(adapter.Bucket),
 		Prefix: aws.String(prefix),
@@ -74,7 +76,7 @@ func (adapter Adapter) AllFiles(ctx context.Context, directory string) ([]string
 	return files, nil
 }
 
-// Directories returns a list of directories in the given directory (non-recursive)
+// Directories returns a list of directories in the given directory (non-recursive).
 func (adapter Adapter) Directories(ctx context.Context, directory string) ([]string, error) {
 	client, err := adapter.NewClient(ctx)
 	if err != nil {
@@ -96,6 +98,7 @@ func (adapter Adapter) Directories(ctx context.Context, directory string) ([]str
 	}
 
 	var dirs []string
+
 	for _, prefix := range result.CommonPrefixes {
 		if prefix.Prefix != nil {
 			// Remove trailing slash for consistency
@@ -107,7 +110,7 @@ func (adapter Adapter) Directories(ctx context.Context, directory string) ([]str
 	return dirs, nil
 }
 
-// AllDirectories returns a list of all directories in the directory and subdirectories
+// AllDirectories returns a list of all directories in the directory and subdirectories.
 func (adapter Adapter) AllDirectories(ctx context.Context, directory string) ([]string, error) {
 	client, err := adapter.NewClient(ctx)
 	if err != nil {
@@ -153,7 +156,7 @@ func (adapter Adapter) AllDirectories(ctx context.Context, directory string) ([]
 	return dirs, nil
 }
 
-// MakeDirectory creates a directory (S3 doesn't have real directories, creates a placeholder)
+// MakeDirectory creates a directory (S3 doesn't have real directories, creates a placeholder).
 func (adapter Adapter) MakeDirectory(ctx context.Context, path string) error {
 	client, err := adapter.NewClient(ctx)
 	if err != nil {
@@ -177,7 +180,7 @@ func (adapter Adapter) MakeDirectory(ctx context.Context, path string) error {
 	return nil
 }
 
-// DeleteDirectory removes a directory and all its contents
+// DeleteDirectory removes a directory and all its contents.
 func (adapter Adapter) DeleteDirectory(ctx context.Context, directory string) error {
 	// First, list all objects with the directory prefix
 	files, err := adapter.AllFiles(ctx, directory)

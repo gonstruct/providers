@@ -27,6 +27,7 @@ func TestGenerateKey_Uniqueness(t *testing.T) {
 	}
 
 	keys := make(map[string]bool)
+
 	for i := 0; i < 100; i++ {
 		key, err := adapter.GenerateKey()
 		if err != nil {
@@ -37,6 +38,7 @@ func TestGenerateKey_Uniqueness(t *testing.T) {
 		if keys[keyStr] {
 			t.Errorf("GenerateKey() produced duplicate key on iteration %d", i)
 		}
+
 		keys[keyStr] = true
 	}
 }
@@ -103,6 +105,7 @@ func TestEncrypt_ProducesDifferentCiphertexts(t *testing.T) {
 		if ciphertexts[encrypted] {
 			t.Errorf("Encrypt() produced duplicate ciphertext on iteration %d", i)
 		}
+
 		ciphertexts[encrypted] = true
 	}
 }
@@ -221,6 +224,7 @@ func TestDecrypt_TooShort(t *testing.T) {
 
 func TestDecrypt_WithPreviousKeys(t *testing.T) {
 	oldKey := make([]byte, 32)
+
 	newKey := make([]byte, 32)
 	for i := range oldKey {
 		oldKey[i] = byte(i)
@@ -233,6 +237,7 @@ func TestDecrypt_WithPreviousKeys(t *testing.T) {
 	}
 
 	plain := []byte("secret message")
+
 	encrypted, err := oldAdapter.Encrypt(plain)
 	if err != nil {
 		t.Fatalf("Encrypt() error = %v", err)

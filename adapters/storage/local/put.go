@@ -11,7 +11,7 @@ import (
 	"github.com/gonstruct/providers/storage"
 )
 
-// PutFile stores a file with a unique ID
+// PutFile stores a file with a unique ID.
 func (a *Adapter) PutFile(ctx context.Context, input entities.StorageInput) (*entities.StorageObject, error) {
 	extension := input.File.Extension()
 	mimetype := gomime.TypeByExtension(extension)
@@ -42,7 +42,7 @@ func (a *Adapter) PutFile(ctx context.Context, input entities.StorageInput) (*en
 	}, nil
 }
 
-// Put stores raw bytes at the given path
+// Put stores raw bytes at the given path.
 func (a *Adapter) Put(ctx context.Context, path string, contents []byte) error {
 	fullPath := filepath.Join(a.Root, path)
 
@@ -58,7 +58,7 @@ func (a *Adapter) Put(ctx context.Context, path string, contents []byte) error {
 	return nil
 }
 
-// PutStream stores content from a reader at the given path
+// PutStream stores content from a reader at the given path.
 func (a *Adapter) PutStream(ctx context.Context, path string, stream io.Reader) error {
 	fullPath := filepath.Join(a.Root, path)
 

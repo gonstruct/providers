@@ -60,7 +60,8 @@ func (adapter *Adapter) Send(ctx context.Context, input entities.MailInput) erro
 
 	message.SetBody("text/html", input.Html.String())
 
-	if err := gomail.NewDialer(adapter.Host, adapter.Port, adapter.Username, adapter.Password).DialAndSend(message); err != nil {
+	dialer := gomail.NewDialer(adapter.Host, adapter.Port, adapter.Username, adapter.Password)
+	if err := dialer.DialAndSend(message); err != nil {
 		return mail.Err("send via SMTP", err)
 	}
 

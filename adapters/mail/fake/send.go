@@ -43,7 +43,7 @@ func (a *Adapter) Send(ctx context.Context, input entities.MailInput) error {
 	return nil
 }
 
-// Ensure Adapter implements the interface
+// Ensure Adapter implements the interface.
 var _ interface {
 	Send(ctx context.Context, input entities.MailInput) error
 } = (*Adapter)(nil)

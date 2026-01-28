@@ -9,9 +9,14 @@ func (a *Adapter) Decrypt(base64Cipher string, additionalData ...[]byte) ([]byte
 		result, err := a.DecryptFunc(base64Cipher, additionalData...)
 		if err == nil {
 			a.mu.Lock()
-			a.DecryptCalls = append(a.DecryptCalls, DecryptCall{Ciphertext: base64Cipher, AdditionalData: additionalData, Result: result})
+			a.DecryptCalls = append(a.DecryptCalls, DecryptCall{
+				Ciphertext:     base64Cipher,
+				AdditionalData: additionalData,
+				Result:         result,
+			})
 			a.mu.Unlock()
 		}
+
 		return result, err
 	}
 
@@ -36,7 +41,11 @@ func (a *Adapter) Decrypt(base64Cipher string, additionalData ...[]byte) ([]byte
 	}
 
 	a.mu.Lock()
-	a.DecryptCalls = append(a.DecryptCalls, DecryptCall{Ciphertext: base64Cipher, AdditionalData: additionalData, Result: plaintext})
+	a.DecryptCalls = append(a.DecryptCalls, DecryptCall{
+		Ciphertext:     base64Cipher,
+		AdditionalData: additionalData,
+		Result:         plaintext,
+	})
 	a.mu.Unlock()
 
 	return plaintext, nil

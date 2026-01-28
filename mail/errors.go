@@ -5,7 +5,7 @@ import (
 	"fmt"
 )
 
-// Sentinel errors for mail operations
+// Sentinel errors for mail operations.
 var (
 	ErrNoSubject    = errors.New("no subject specified")
 	ErrNoSender     = errors.New("no sender specified")
@@ -13,7 +13,7 @@ var (
 	ErrSendFailed   = errors.New("failed to send email")
 )
 
-// Err wraps an error with mail context
+// Err wraps an error with mail context.
 func Err(op string, err error) error {
 	return fmt.Errorf("mail: %s: %w", op, err)
 }

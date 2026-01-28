@@ -13,7 +13,7 @@ import (
 //go:embed mail
 var testTemplatesFS embed.FS
 
-// testMailable implements contracts.Mailable for testing
+// testMailable implements contracts.Mailable for testing.
 type testMailable struct {
 	envelope    mailables.Envelope
 	content     mailables.Content
@@ -74,6 +74,7 @@ func TestSend_FakeRecordsCalls(t *testing.T) {
 
 	// Verify Reset works
 	f.Reset()
+
 	if f.SentCount() != 0 {
 		t.Error("SentCount() should be 0 after Reset()")
 	}
@@ -111,14 +112,16 @@ func TestSend_AssertSentWithPredicate(t *testing.T) {
 	})
 }
 
-// assertSentWith is a helper for custom predicate assertions
+// assertSentWith is a helper for custom predicate assertions.
 func assertSentWith(t testing.TB, f *fake.Adapter, predicate func(call fake.SendCall) bool) {
 	t.Helper()
+
 	for _, call := range f.Calls {
 		if predicate(call) {
 			return
 		}
 	}
+
 	t.Error("No email matched the predicate")
 }
 

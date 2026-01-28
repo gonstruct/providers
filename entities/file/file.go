@@ -42,6 +42,7 @@ func FromRequest(request *http.Request, key string) (File, error) {
 
 func FromImage(name string, image image.Image) (File, error) {
 	buffer := new(bytes.Buffer)
+
 	err := png.Encode(buffer, image)
 	if err != nil {
 		return File{}, err

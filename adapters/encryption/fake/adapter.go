@@ -4,7 +4,7 @@ import (
 	"sync"
 )
 
-// Adapter is a fake encryption adapter for testing
+// Adapter is a fake encryption adapter for testing.
 type Adapter struct {
 	mu sync.RWMutex
 
@@ -38,17 +38,18 @@ type DecryptCall struct {
 	Result         []byte
 }
 
-// New creates a new fake encryption adapter
+// New creates a new fake encryption adapter.
 func New() *Adapter {
 	return &Adapter{
 		store: make(map[string][]byte),
 	}
 }
 
-// Reset clears all recorded calls
+// Reset clears all recorded calls.
 func (a *Adapter) Reset() {
 	a.mu.Lock()
 	defer a.mu.Unlock()
+
 	a.EncryptCalls = nil
 	a.DecryptCalls = nil
 	a.EncryptError = nil
@@ -62,21 +63,23 @@ func (a *Adapter) Reset() {
 
 // --- Helper Methods ---
 
-// EncryptCount returns the number of encryption calls
+// EncryptCount returns the number of encryption calls.
 func (a *Adapter) EncryptCount() int {
 	a.mu.RLock()
 	defer a.mu.RUnlock()
+
 	return len(a.EncryptCalls)
 }
 
-// DecryptCount returns the number of decryption calls
+// DecryptCount returns the number of decryption calls.
 func (a *Adapter) DecryptCount() int {
 	a.mu.RLock()
 	defer a.mu.RUnlock()
+
 	return len(a.DecryptCalls)
 }
 
-// LastEncryptCall returns the last encrypt call, or nil if none
+// LastEncryptCall returns the last encrypt call, or nil if none.
 func (a *Adapter) LastEncryptCall() *EncryptCall {
 	a.mu.RLock()
 	defer a.mu.RUnlock()
@@ -88,7 +91,7 @@ func (a *Adapter) LastEncryptCall() *EncryptCall {
 	return &a.EncryptCalls[len(a.EncryptCalls)-1]
 }
 
-// LastDecryptCall returns the last decrypt call, or nil if none
+// LastDecryptCall returns the last decrypt call, or nil if none.
 func (a *Adapter) LastDecryptCall() *DecryptCall {
 	a.mu.RLock()
 	defer a.mu.RUnlock()
@@ -104,10 +107,12 @@ func bytesEqual(a, b []byte) bool {
 	if len(a) != len(b) {
 		return false
 	}
+
 	for i := range a {
 		if a[i] != b[i] {
 			return false
 		}
 	}
+
 	return true
 }

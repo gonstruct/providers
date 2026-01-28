@@ -9,6 +9,7 @@ func (a *Adapter) URL(path string) string {
 	if a.BaseURL == "" {
 		return path
 	}
+
 	return a.BaseURL + "/" + path
 }
 

@@ -137,6 +137,7 @@ func (a *Adapter) Exists(ctx context.Context, path string) (bool, error) {
 
 func (a *Adapter) Missing(ctx context.Context, path string) (bool, error) {
 	exists, err := a.Exists(ctx, path)
+
 	return !exists, err
 }
 
@@ -240,10 +241,12 @@ func (a *Adapter) Delete(ctx context.Context, paths ...string) error {
 	}
 
 	a.mu.Lock()
+
 	a.DeleteCalls = append(a.DeleteCalls, paths)
 	for _, path := range paths {
 		delete(a.files, path)
 	}
+
 	a.mu.Unlock()
 
 	return nil

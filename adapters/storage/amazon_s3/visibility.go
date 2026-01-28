@@ -10,7 +10,7 @@ import (
 	"github.com/gonstruct/providers/storage"
 )
 
-// GetVisibility returns the visibility of a file
+// GetVisibility returns the visibility of a file.
 func (adapter Adapter) GetVisibility(ctx context.Context, path string) (entities.Visibility, error) {
 	client, err := adapter.NewClient(ctx)
 	if err != nil {
@@ -37,7 +37,7 @@ func (adapter Adapter) GetVisibility(ctx context.Context, path string) (entities
 	return entities.VisibilityPrivate, nil
 }
 
-// SetVisibility changes the visibility of a file
+// SetVisibility changes the visibility of a file.
 func (adapter Adapter) SetVisibility(ctx context.Context, path string, visibility entities.Visibility) error {
 	client, err := adapter.NewClient(ctx)
 	if err != nil {
@@ -45,6 +45,7 @@ func (adapter Adapter) SetVisibility(ctx context.Context, path string, visibilit
 	}
 
 	var acl types.ObjectCannedACL
+
 	switch visibility {
 	case entities.VisibilityPublic:
 		acl = types.ObjectCannedACLPublicRead

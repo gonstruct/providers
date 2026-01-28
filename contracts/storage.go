@@ -8,7 +8,7 @@ import (
 	"github.com/gonstruct/providers/entities"
 )
 
-// Storage defines the interface for storage operations (Laravel-style)
+// Storage defines the interface for storage operations (Laravel-style).
 type Storage interface {
 	// Writing files
 	PutFile(ctx context.Context, input entities.StorageInput) (*entities.StorageObject, error)

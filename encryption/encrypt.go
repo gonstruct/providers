@@ -9,7 +9,7 @@ type stringOrBytes interface {
 }
 
 // Encrypt encrypts data using the configured encryption adapter
-// Optional additionalData provides authenticated data (AAD) for AES-GCM
+// Optional additionalData provides authenticated data (AAD) for AES-GCM.
 func Encrypt[T stringOrBytes](plain T, optionSlice ...Option) (string, error) {
 	options := apply(optionSlice...)
 

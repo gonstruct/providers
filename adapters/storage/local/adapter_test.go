@@ -17,6 +17,7 @@ import (
 func setupAdapter(t *testing.T) (*local.Adapter, string) {
 	t.Helper()
 	root := t.TempDir()
+
 	return local.NewAdapter(root), root
 }
 
@@ -26,11 +27,13 @@ func TestNewAdapter(t *testing.T) {
 	if adapter.Root != root {
 		t.Errorf("Root = %q, want %q", adapter.Root, root)
 	}
-	if adapter.FilePermission != 0644 {
-		t.Errorf("FilePermission = %o, want %o", adapter.FilePermission, 0644)
+
+	if adapter.FilePermission != 0o644 {
+		t.Errorf("FilePermission = %o, want %o", adapter.FilePermission, 0o644)
 	}
-	if adapter.DirectoryPermission != 0755 {
-		t.Errorf("DirectoryPermission = %o, want %o", adapter.DirectoryPermission, 0755)
+
+	if adapter.DirectoryPermission != 0o755 {
+		t.Errorf("DirectoryPermission = %o, want %o", adapter.DirectoryPermission, 0o755)
 	}
 }
 
@@ -104,6 +107,7 @@ func TestAdapter_PutFile(t *testing.T) {
 	if obj.Name != "document" { // Name() trims the extension
 		t.Errorf("Name = %q, want %q", obj.Name, "document")
 	}
+
 	if obj.MimeType == "" {
 		t.Error("MimeType should not be empty")
 	}
@@ -113,6 +117,7 @@ func TestAdapter_PutFile(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Get() error = %v", err)
 	}
+
 	if !bytes.Equal(got, content) {
 		t.Errorf("stored content = %q, want %q", got, content)
 	}
@@ -129,6 +134,7 @@ func TestAdapter_Exists_Missing(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Exists() error = %v", err)
 	}
+
 	if exists {
 		t.Error("Exists() = true for non-existent file")
 	}
@@ -137,6 +143,7 @@ func TestAdapter_Exists_Missing(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Missing() error = %v", err)
 	}
+
 	if !missing {
 		t.Error("Missing() = false for non-existent file")
 	}
@@ -151,6 +158,7 @@ func TestAdapter_Exists_Missing(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Exists() error = %v", err)
 	}
+
 	if !exists {
 		t.Error("Exists() = false for existing file")
 	}
@@ -159,6 +167,7 @@ func TestAdapter_Exists_Missing(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Missing() error = %v", err)
 	}
+
 	if missing {
 		t.Error("Missing() = true for existing file")
 	}
@@ -231,6 +240,7 @@ func TestAdapter_Copy(t *testing.T) {
 	if !fromExists {
 		t.Error("original file should still exist after Copy")
 	}
+
 	if !toExists {
 		t.Error("copied file should exist after Copy")
 	}
@@ -265,6 +275,7 @@ func TestAdapter_Move(t *testing.T) {
 	if fromExists {
 		t.Error("original file should not exist after Move")
 	}
+
 	if !toExists {
 		t.Error("destination file should exist after Move")
 	}
@@ -318,6 +329,7 @@ func TestAdapter_Visibility(t *testing.T) {
 	if err != nil {
 		t.Fatalf("GetVisibility() error = %v", err)
 	}
+
 	if vis != entities.VisibilityPublic {
 		t.Errorf("GetVisibility() = %v, want %v", vis, entities.VisibilityPublic)
 	}
@@ -331,6 +343,7 @@ func TestAdapter_Visibility(t *testing.T) {
 	if err != nil {
 		t.Fatalf("GetVisibility() error = %v", err)
 	}
+
 	if vis != entities.VisibilityPrivate {
 		t.Errorf("GetVisibility() = %v, want %v", vis, entities.VisibilityPrivate)
 	}
@@ -348,10 +361,12 @@ func TestAdapter_MakeDirectory_DeleteDirectory(t *testing.T) {
 
 	// Verify directory exists
 	fullPath := filepath.Join(root, dir)
+
 	info, err := os.Stat(fullPath)
 	if err != nil {
 		t.Fatalf("directory does not exist: %v", err)
 	}
+
 	if !info.IsDir() {
 		t.Error("path is not a directory")
 	}

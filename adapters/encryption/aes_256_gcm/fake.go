@@ -1,6 +1,6 @@
 package aes_256_gcm
 
-// FakeAdapter is a mock encryption adapter for testing
+// FakeAdapter is a mock encryption adapter for testing.
 type FakeAdapter struct {
 	// EncryptFunc allows customizing the Encrypt behavior
 	EncryptFunc func(plain []byte, additionalData ...[]byte) (string, error)
@@ -27,7 +27,7 @@ type FakeDecryptCall struct {
 	AdditionalData [][]byte
 }
 
-// Fake creates a new mock encryption adapter with default behaviors
+// Fake creates a new mock encryption adapter with default behaviors.
 func Fake() *FakeAdapter {
 	return &FakeAdapter{
 		EncryptFunc: func(plain []byte, additionalData ...[]byte) (string, error) {
@@ -47,6 +47,7 @@ func (a *FakeAdapter) Encrypt(plain []byte, additionalData ...[]byte) (string, e
 		Plain:          plain,
 		AdditionalData: additionalData,
 	})
+
 	return a.EncryptFunc(plain, additionalData...)
 }
 
@@ -55,15 +56,17 @@ func (a *FakeAdapter) Decrypt(base64Cipher string, additionalData ...[]byte) ([]
 		Base64Cipher:   base64Cipher,
 		AdditionalData: additionalData,
 	})
+
 	return a.DecryptFunc(base64Cipher, additionalData...)
 }
 
 func (a *FakeAdapter) GenerateKey() ([]byte, error) {
 	a.GenerateKeyCalls++
+
 	return a.GenerateKeyFunc()
 }
 
-// Reset clears all recorded calls
+// Reset clears all recorded calls.
 func (a *FakeAdapter) Reset() {
 	a.EncryptCalls = nil
 	a.DecryptCalls = nil

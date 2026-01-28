@@ -7,7 +7,7 @@ import (
 	"github.com/gonstruct/providers/entities/file"
 )
 
-// Visibility represents file access permissions
+// Visibility represents file access permissions.
 type Visibility string
 
 const (
@@ -25,7 +25,7 @@ func (i StorageInput) Name() string {
 	return strings.TrimSuffix(i.File.Name, i.File.Extension())
 }
 
-// StorageObject contains metadata about a stored file
+// StorageObject contains metadata about a stored file.
 type StorageObject struct {
 	Name         string
 	Path         string

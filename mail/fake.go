@@ -7,17 +7,17 @@ import (
 	"github.com/gonstruct/providers/entities/mailables"
 )
 
-// FakeOption configures the fake mail adapter
+// FakeOption configures the fake mail adapter.
 type FakeOption func(*provider)
 
-// WithFakeTemplates sets the templates for the fake adapter
+// WithFakeTemplates sets the templates for the fake adapter.
 func WithFakeTemplates(templates embed.FS) FakeOption {
 	return func(p *provider) {
 		p.templates = templates
 	}
 }
 
-// WithFakeDefaultEnvelope sets the default envelope for the fake adapter
+// WithFakeDefaultEnvelope sets the default envelope for the fake adapter.
 func WithFakeDefaultEnvelope(envelope mailables.Envelope) FakeOption {
 	return func(p *provider) {
 		p.defaultEnvelope = &envelope

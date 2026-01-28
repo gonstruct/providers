@@ -36,5 +36,6 @@ func (a *Adapter) SetVisibility(ctx context.Context, path string, visibility ent
 	}
 
 	f.Visibility = visibility
+
 	return nil
 }

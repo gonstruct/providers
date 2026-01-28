@@ -9,9 +9,14 @@ func (a *Adapter) Encrypt(plain []byte, additionalData ...[]byte) (string, error
 		result, err := a.EncryptFunc(plain, additionalData...)
 		if err == nil {
 			a.mu.Lock()
-			a.EncryptCalls = append(a.EncryptCalls, EncryptCall{Plaintext: plain, AdditionalData: additionalData, Result: result})
+			a.EncryptCalls = append(a.EncryptCalls, EncryptCall{
+				Plaintext:      plain,
+				AdditionalData: additionalData,
+				Result:         result,
+			})
 			a.mu.Unlock()
 		}
+
 		return result, err
 	}
 

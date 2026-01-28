@@ -31,6 +31,7 @@ func TestPutFile(t *testing.T) {
 	if !ok {
 		t.Fatal("could not get file content from fake")
 	}
+
 	if !bytes.Equal(stored, content) {
 		t.Errorf("stored content = %q, want %q", stored, content)
 	}
@@ -53,6 +54,7 @@ func TestPutFile_WithAdapter(t *testing.T) {
 
 func TestPutFile_WithContext(t *testing.T) {
 	storage.Fake()
+
 	ctx, cancel := context.WithCancel(context.Background())
 	cancel() // Cancel immediately
 

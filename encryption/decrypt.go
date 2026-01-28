@@ -5,7 +5,7 @@ import (
 )
 
 // Decrypt decrypts data using the configured encryption adapter
-// Optional additionalData must match the AAD used during encryption
+// Optional additionalData must match the AAD used during encryption.
 func Decrypt[T stringOrBytes](base64Cipher T, optionSlice ...Option) ([]byte, error) {
 	options := apply(optionSlice...)
 
@@ -19,7 +19,7 @@ func Decrypt[T stringOrBytes](base64Cipher T, optionSlice ...Option) ([]byte, er
 	return nil, errors.New("unsupported data type")
 }
 
-// DecryptString decrypts data and returns it as a string
+// DecryptString decrypts data and returns it as a string.
 func DecryptString[T stringOrBytes](base64Cipher T, optionSlice ...Option) (string, error) {
 	result, err := Decrypt(base64Cipher, optionSlice...)
 	if err != nil {

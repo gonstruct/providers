@@ -8,10 +8,10 @@ import (
 	"github.com/gonstruct/providers/entities"
 )
 
-// ErrFileNotFound is returned when a file does not exist
+// ErrFileNotFound is returned when a file does not exist.
 var ErrFileNotFound = errors.New("file not found")
 
-// Adapter is an in-memory storage adapter for testing
+// Adapter is an in-memory storage adapter for testing.
 type Adapter struct {
 	mu    sync.RWMutex
 	files map[string]*fakeFile
@@ -76,7 +76,7 @@ type MoveCall struct {
 	To   string
 }
 
-// New creates a new fake storage adapter
+// New creates a new fake storage adapter.
 func New() *Adapter {
 	return &Adapter{
 		files:   make(map[string]*fakeFile),
@@ -84,10 +84,11 @@ func New() *Adapter {
 	}
 }
 
-// Reset clears all stored files and recorded calls
+// Reset clears all stored files and recorded calls.
 func (a *Adapter) Reset() {
 	a.mu.Lock()
 	defer a.mu.Unlock()
+
 	a.files = make(map[string]*fakeFile)
 	a.PutFileCalls = nil
 	a.PutCalls = nil
@@ -99,33 +100,38 @@ func (a *Adapter) Reset() {
 
 // --- Helper Methods ---
 
-// HasFile returns true if a file exists at the given path
+// HasFile returns true if a file exists at the given path.
 func (a *Adapter) HasFile(path string) bool {
 	a.mu.RLock()
 	defer a.mu.RUnlock()
+
 	_, ok := a.files[path]
+
 	return ok
 }
 
-// GetFileContent returns the content of a file at the given path
+// GetFileContent returns the content of a file at the given path.
 func (a *Adapter) GetFileContent(path string) ([]byte, bool) {
 	a.mu.RLock()
 	defer a.mu.RUnlock()
+
 	file, ok := a.files[path]
 	if !ok {
 		return nil, false
 	}
+
 	return file.Content, true
 }
 
-// FileCount returns the number of stored files
+// FileCount returns the number of stored files.
 func (a *Adapter) FileCount() int {
 	a.mu.RLock()
 	defer a.mu.RUnlock()
+
 	return len(a.files)
 }
 
-// StoredPaths returns all stored file paths
+// StoredPaths returns all stored file paths.
 func (a *Adapter) StoredPaths() []string {
 	a.mu.RLock()
 	defer a.mu.RUnlock()
@@ -134,5 +140,6 @@ func (a *Adapter) StoredPaths() []string {
 	for path := range a.files {
 		paths = append(paths, path)
 	}
+
 	return paths
 }

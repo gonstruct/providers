@@ -5,7 +5,7 @@ import (
 	"fmt"
 )
 
-// Sentinel errors for storage operations
+// Sentinel errors for storage operations.
 var (
 	ErrFileNotFound      = errors.New("file not found")
 	ErrDirectoryNotFound = errors.New("directory not found")
@@ -14,12 +14,12 @@ var (
 	ErrAlreadyExists     = errors.New("file already exists")
 )
 
-// Err wraps an error with storage context
+// Err wraps an error with storage context.
 func Err(op string, err error) error {
 	return fmt.Errorf("storage: %s: %w", op, err)
 }
 
-// PathErr wraps an error with storage context and path info
+// PathErr wraps an error with storage context and path info.
 func PathErr(op, path string, err error) error {
 	return fmt.Errorf("storage: %s %q: %w", op, path, err)
 }

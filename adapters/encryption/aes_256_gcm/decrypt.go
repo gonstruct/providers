@@ -9,7 +9,7 @@ import (
 )
 
 // Decrypt decrypts base64-encoded ciphertext using AES-256-GCM
-// Optional additionalData must match the AAD used during encryption
+// Optional additionalData must match the AAD used during encryption.
 func (encrypter Adapter) Decrypt(base64Cipher string, additionalData ...[]byte) ([]byte, error) {
 	// Use first additional data if provided, otherwise nil
 	var aad []byte

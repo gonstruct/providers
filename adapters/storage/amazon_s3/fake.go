@@ -11,7 +11,7 @@ import (
 	"github.com/gonstruct/providers/entities"
 )
 
-// FakeAdapter is an in-memory S3 adapter for testing
+// FakeAdapter is an in-memory S3 adapter for testing.
 type FakeAdapter struct {
 	mu    sync.RWMutex
 	files map[string]*fakeFile
@@ -47,7 +47,7 @@ type fakeFile struct {
 	LastModified time.Time
 }
 
-// Fake creates a new in-memory S3 adapter for testing
+// Fake creates a new in-memory S3 adapter for testing.
 func Fake() *FakeAdapter {
 	return &FakeAdapter{
 		files:   make(map[string]*fakeFile),
@@ -172,6 +172,7 @@ func (a *FakeAdapter) Exists(ctx context.Context, path string) (bool, error) {
 
 func (a *FakeAdapter) Missing(ctx context.Context, path string) (bool, error) {
 	exists, err := a.Exists(ctx, path)
+
 	return !exists, err
 }
 
@@ -271,9 +272,11 @@ func (a *FakeAdapter) Delete(ctx context.Context, paths ...string) error {
 	}
 
 	a.mu.Lock()
+
 	for _, path := range paths {
 		delete(a.files, path)
 	}
+
 	a.mu.Unlock()
 
 	return nil
@@ -309,6 +312,7 @@ func (a *FakeAdapter) SetVisibility(ctx context.Context, path string, visibility
 	}
 
 	f.Visibility = visibility
+
 	return nil
 }
 
@@ -316,6 +320,7 @@ func (a *FakeAdapter) Files(ctx context.Context, directory string) ([]string, er
 	if a.FilesError != nil {
 		return nil, a.FilesError
 	}
+
 	return a.listFiles(directory, false), nil
 }
 
@@ -323,6 +328,7 @@ func (a *FakeAdapter) AllFiles(ctx context.Context, directory string) ([]string,
 	if a.FilesError != nil {
 		return nil, a.FilesError
 	}
+
 	return a.listFiles(directory, true), nil
 }
 
@@ -331,6 +337,7 @@ func (a *FakeAdapter) listFiles(directory string, recursive bool) []string {
 	defer a.mu.RUnlock()
 
 	var files []string
+
 	prefix := directory
 	if prefix != "" && prefix[len(prefix)-1] != '/' {
 		prefix += "/"
@@ -340,12 +347,15 @@ func (a *FakeAdapter) listFiles(directory string, recursive bool) []string {
 		if len(path) > len(prefix) && path[:len(prefix)] == prefix {
 			rest := path[len(prefix):]
 			hasSlash := false
+
 			for _, c := range rest {
 				if c == '/' {
 					hasSlash = true
+
 					break
 				}
 			}
+
 			if recursive || !hasSlash {
 				files = append(files, path)
 			}
@@ -359,6 +369,7 @@ func (a *FakeAdapter) Directories(ctx context.Context, directory string) ([]stri
 	if a.DirectoriesError != nil {
 		return nil, a.DirectoriesError
 	}
+
 	return a.listDirectories(directory, false), nil
 }
 
@@ -366,6 +377,7 @@ func (a *FakeAdapter) AllDirectories(ctx context.Context, directory string) ([]s
 	if a.DirectoriesError != nil {
 		return nil, a.DirectoriesError
 	}
+
 	return a.listDirectories(directory, true), nil
 }
 
@@ -374,6 +386,7 @@ func (a *FakeAdapter) listDirectories(directory string, recursive bool) []string
 	defer a.mu.RUnlock()
 
 	dirs := make(map[string]bool)
+
 	prefix := directory
 	if prefix != "" && prefix[len(prefix)-1] != '/' {
 		prefix += "/"
@@ -386,6 +399,7 @@ func (a *FakeAdapter) listDirectories(directory string, recursive bool) []string
 				if c == '/' {
 					dir := prefix + rest[:i]
 					dirs[dir] = true
+
 					if !recursive {
 						break
 					}
@@ -406,6 +420,7 @@ func (a *FakeAdapter) MakeDirectory(ctx context.Context, path string) error {
 	if a.MakeDirectoryError != nil {
 		return a.MakeDirectoryError
 	}
+
 	return nil
 }
 
@@ -435,6 +450,7 @@ func (a *FakeAdapter) URL(path string) string {
 	if a.BaseURL == "" {
 		return path
 	}
+
 	return a.BaseURL + "/" + path
 }
 
@@ -446,38 +462,42 @@ func (a *FakeAdapter) TemporaryURL(ctx context.Context, path string, expiration 
 	return a.URL(path) + "?expires=" + time.Now().Add(expiration).Format(time.RFC3339), nil
 }
 
-// Reset clears all stored files
+// Reset clears all stored files.
 func (a *FakeAdapter) Reset() {
 	a.mu.Lock()
 	a.files = make(map[string]*fakeFile)
 	a.mu.Unlock()
 }
 
-// FileCount returns the number of stored files
+// FileCount returns the number of stored files.
 func (a *FakeAdapter) FileCount() int {
 	a.mu.RLock()
 	defer a.mu.RUnlock()
+
 	return len(a.files)
 }
 
-// HasFile checks if a specific file exists
+// HasFile checks if a specific file exists.
 func (a *FakeAdapter) HasFile(path string) bool {
 	a.mu.RLock()
 	_, ok := a.files[path]
 	a.mu.RUnlock()
+
 	return ok
 }
 
-// GetFileContent retrieves file content directly
+// GetFileContent retrieves file content directly.
 func (a *FakeAdapter) GetFileContent(path string) ([]byte, bool) {
 	a.mu.RLock()
 	f, ok := a.files[path]
 	a.mu.RUnlock()
+
 	if !ok {
 		return nil, false
 	}
+
 	return f.Content, true
 }
 
-// ErrFakeFileNotFound is returned when a file does not exist
+// ErrFakeFileNotFound is returned when a file does not exist.
 var ErrFakeFileNotFound = errors.New("file not found")

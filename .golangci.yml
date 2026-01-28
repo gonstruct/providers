@@ -6,13 +6,11 @@ linters:
   disable:
     - wsl
     - depguard
-    # - gochecknoinits
-    # - nlreturn
-    # - mnd
-    # - misspell
-    # - inamedparam
-    # - gomoddirectives
     - copyloopvar
+    - cyclop        # Complex functions are acceptable for storage operations
+    - funcorder     # Method ordering is less important than code locality
+    - interfacebloat # Storage interface intentionally has many methods
+    - nestif        # Some nested conditions are more readable
 
   # settings:
   #   lll:

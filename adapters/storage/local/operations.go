@@ -9,7 +9,7 @@ import (
 	"github.com/gonstruct/providers/storage"
 )
 
-// Copy copies a file from one location to another
+// Copy copies a file from one location to another.
 func (a *Adapter) Copy(ctx context.Context, from, to string) error {
 	srcPath := filepath.Join(a.Root, from)
 	dstPath := filepath.Join(a.Root, to)
@@ -20,6 +20,7 @@ func (a *Adapter) Copy(ctx context.Context, from, to string) error {
 		if os.IsNotExist(err) {
 			return storage.PathErr("copy", from, storage.ErrFileNotFound)
 		}
+
 		return storage.PathErr("copy open source", from, err)
 	}
 	defer srcFile.Close()
@@ -50,7 +51,7 @@ func (a *Adapter) Copy(ctx context.Context, from, to string) error {
 	return nil
 }
 
-// Move moves a file from one location to another
+// Move moves a file from one location to another.
 func (a *Adapter) Move(ctx context.Context, from, to string) error {
 	srcPath := filepath.Join(a.Root, from)
 	dstPath := filepath.Join(a.Root, to)
@@ -66,6 +67,7 @@ func (a *Adapter) Move(ctx context.Context, from, to string) error {
 		if err := a.Copy(ctx, from, to); err != nil {
 			return err
 		}
+
 		if err := os.Remove(srcPath); err != nil {
 			return storage.PathErr("move remove source", from, err)
 		}
@@ -74,7 +76,7 @@ func (a *Adapter) Move(ctx context.Context, from, to string) error {
 	return nil
 }
 
-// Delete removes one or more files
+// Delete removes one or more files.
 func (a *Adapter) Delete(ctx context.Context, paths ...string) error {
 	for _, path := range paths {
 		fullPath := filepath.Join(a.Root, path)
@@ -82,6 +84,7 @@ func (a *Adapter) Delete(ctx context.Context, paths ...string) error {
 			if os.IsNotExist(err) {
 				continue // Ignore non-existent files (idempotent delete)
 			}
+
 			return storage.PathErr("delete", path, err)
 		}
 	}

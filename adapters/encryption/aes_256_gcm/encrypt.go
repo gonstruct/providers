@@ -11,7 +11,7 @@ import (
 )
 
 // Encrypt encrypts plain bytes using AES-256-GCM
-// Optional additionalData provides authenticated data (AAD) that is verified but not encrypted
+// Optional additionalData provides authenticated data (AAD) that is verified but not encrypted.
 func (encrypter Adapter) Encrypt(plain []byte, additionalData ...[]byte) (string, error) {
 	block, err := aes.NewCipher(encrypter.Key())
 	if err != nil {

@@ -12,7 +12,7 @@ import (
 	"github.com/gonstruct/providers/storage"
 )
 
-// Get retrieves the contents of a file
+// Get retrieves the contents of a file.
 func (adapter Adapter) Get(ctx context.Context, path string) ([]byte, error) {
 	client, err := adapter.NewClient(ctx)
 	if err != nil {
@@ -31,7 +31,7 @@ func (adapter Adapter) Get(ctx context.Context, path string) ([]byte, error) {
 	return io.ReadAll(result.Body)
 }
 
-// GetStream returns a reader for the file contents
+// GetStream returns a reader for the file contents.
 func (adapter Adapter) GetStream(ctx context.Context, path string) (io.ReadCloser, error) {
 	client, err := adapter.NewClient(ctx)
 	if err != nil {
@@ -49,7 +49,7 @@ func (adapter Adapter) GetStream(ctx context.Context, path string) (io.ReadClose
 	return result.Body, nil
 }
 
-// Exists checks if a file exists
+// Exists checks if a file exists.
 func (adapter Adapter) Exists(ctx context.Context, path string) (bool, error) {
 	client, err := adapter.NewClient(ctx)
 	if err != nil {
@@ -68,13 +68,14 @@ func (adapter Adapter) Exists(ctx context.Context, path string) (bool, error) {
 	return true, nil
 }
 
-// Missing checks if a file does not exist
+// Missing checks if a file does not exist.
 func (adapter Adapter) Missing(ctx context.Context, path string) (bool, error) {
 	exists, err := adapter.Exists(ctx, path)
+
 	return !exists, err
 }
 
-// Size returns the size of a file in bytes
+// Size returns the size of a file in bytes.
 func (adapter Adapter) Size(ctx context.Context, path string) (int64, error) {
 	client, err := adapter.NewClient(ctx)
 	if err != nil {
@@ -96,7 +97,7 @@ func (adapter Adapter) Size(ctx context.Context, path string) (int64, error) {
 	return 0, nil
 }
 
-// LastModified returns the last modification time of a file
+// LastModified returns the last modification time of a file.
 func (adapter Adapter) LastModified(ctx context.Context, path string) (time.Time, error) {
 	client, err := adapter.NewClient(ctx)
 	if err != nil {
@@ -118,7 +119,7 @@ func (adapter Adapter) LastModified(ctx context.Context, path string) (time.Time
 	return time.Time{}, nil
 }
 
-// MimeType returns the MIME type of a file
+// MimeType returns the MIME type of a file.
 func (adapter Adapter) MimeType(ctx context.Context, path string) (string, error) {
 	client, err := adapter.NewClient(ctx)
 	if err != nil {
@@ -141,7 +142,7 @@ func (adapter Adapter) MimeType(ctx context.Context, path string) (string, error
 	return gomime.TypeByExtension(path), nil
 }
 
-// Put stores raw bytes at the given path
+// Put stores raw bytes at the given path.
 func (adapter Adapter) Put(ctx context.Context, path string, contents []byte) error {
 	client, err := adapter.NewClient(ctx)
 	if err != nil {
@@ -166,7 +167,7 @@ func (adapter Adapter) Put(ctx context.Context, path string, contents []byte) er
 	return nil
 }
 
-// PutStream stores content from a reader at the given path
+// PutStream stores content from a reader at the given path.
 func (adapter Adapter) PutStream(ctx context.Context, path string, stream io.Reader) error {
 	client, err := adapter.NewClient(ctx)
 	if err != nil {

@@ -7,7 +7,7 @@ import (
 	"github.com/gonstruct/providers/entities"
 )
 
-// Adapter is a fake mail adapter for testing
+// Adapter is a fake mail adapter for testing.
 type Adapter struct {
 	mu sync.RWMutex
 
@@ -30,15 +30,16 @@ type SendCall struct {
 	Input       entities.MailInput
 }
 
-// New creates a new fake mail adapter
+// New creates a new fake mail adapter.
 func New() *Adapter {
 	return &Adapter{}
 }
 
-// Reset clears all recorded calls
+// Reset clears all recorded calls.
 func (a *Adapter) Reset() {
 	a.mu.Lock()
 	defer a.mu.Unlock()
+
 	a.Calls = nil
 	a.SendError = nil
 	a.SendFunc = nil
@@ -46,14 +47,15 @@ func (a *Adapter) Reset() {
 
 // --- Helper Methods ---
 
-// SentCount returns the number of emails sent
+// SentCount returns the number of emails sent.
 func (a *Adapter) SentCount() int {
 	a.mu.RLock()
 	defer a.mu.RUnlock()
+
 	return len(a.Calls)
 }
 
-// LastCall returns the last send call, or nil if none
+// LastCall returns the last send call, or nil if none.
 func (a *Adapter) LastCall() *SendCall {
 	a.mu.RLock()
 	defer a.mu.RUnlock()

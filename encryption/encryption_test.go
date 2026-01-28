@@ -10,6 +10,7 @@ func TestEncrypt_String(t *testing.T) {
 	fake := encryption.Fake()
 
 	plain := "hello world"
+
 	encrypted, err := encryption.Encrypt(plain)
 	if err != nil {
 		t.Fatalf("Encrypt() error = %v", err)
@@ -30,6 +31,7 @@ func TestEncrypt_Bytes(t *testing.T) {
 	fake := encryption.Fake()
 
 	plain := []byte("hello world")
+
 	encrypted, err := encryption.Encrypt(plain)
 	if err != nil {
 		t.Fatalf("Encrypt() error = %v", err)
@@ -46,6 +48,7 @@ func TestDecrypt_String(t *testing.T) {
 	fake := encryption.Fake()
 
 	plain := "secret message"
+
 	encrypted, err := encryption.Encrypt(plain)
 	if err != nil {
 		t.Fatalf("Encrypt() error = %v", err)
@@ -94,6 +97,7 @@ func TestEncryptDecrypt_RoundTrip(t *testing.T) {
 	fake := encryption.Fake()
 
 	plain := "round trip test"
+
 	encrypted, err := encryption.Encrypt(plain)
 	if err != nil {
 		t.Fatalf("Encrypt() error = %v", err)
@@ -112,6 +116,7 @@ func TestEncryptDecrypt_RoundTrip(t *testing.T) {
 	if fake.LastEncryptCall() == nil {
 		t.Error("LastEncryptCall() should not be nil")
 	}
+
 	if fake.LastDecryptCall() == nil {
 		t.Error("LastDecryptCall() should not be nil")
 	}

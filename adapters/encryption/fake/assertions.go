@@ -4,9 +4,10 @@ import (
 	"testing"
 )
 
-// AssertEncrypted asserts that data was encrypted at least once
+// AssertEncrypted asserts that data was encrypted at least once.
 func (a *Adapter) AssertEncrypted(t testing.TB) {
 	t.Helper()
+
 	a.mu.RLock()
 	defer a.mu.RUnlock()
 
@@ -15,9 +16,10 @@ func (a *Adapter) AssertEncrypted(t testing.TB) {
 	}
 }
 
-// AssertEncryptedCount asserts the exact number of encryptions
+// AssertEncryptedCount asserts the exact number of encryptions.
 func (a *Adapter) AssertEncryptedCount(t testing.TB, count int) {
 	t.Helper()
+
 	a.mu.RLock()
 	defer a.mu.RUnlock()
 
@@ -26,15 +28,16 @@ func (a *Adapter) AssertEncryptedCount(t testing.TB, count int) {
 	}
 }
 
-// AssertEncryptedString asserts that a specific string was encrypted
+// AssertEncryptedString asserts that a specific string was encrypted.
 func (a *Adapter) AssertEncryptedString(t testing.TB, plaintext string) {
 	t.Helper()
 	a.AssertEncryptedData(t, []byte(plaintext))
 }
 
-// AssertEncryptedData asserts that specific data was encrypted
+// AssertEncryptedData asserts that specific data was encrypted.
 func (a *Adapter) AssertEncryptedData(t testing.TB, plaintext []byte) {
 	t.Helper()
+
 	a.mu.RLock()
 	defer a.mu.RUnlock()
 
@@ -47,9 +50,10 @@ func (a *Adapter) AssertEncryptedData(t testing.TB, plaintext []byte) {
 	t.Errorf("Expected data %q to be encrypted, but it was not", plaintext)
 }
 
-// AssertDecrypted asserts that data was decrypted at least once
+// AssertDecrypted asserts that data was decrypted at least once.
 func (a *Adapter) AssertDecrypted(t testing.TB) {
 	t.Helper()
+
 	a.mu.RLock()
 	defer a.mu.RUnlock()
 
@@ -58,9 +62,10 @@ func (a *Adapter) AssertDecrypted(t testing.TB) {
 	}
 }
 
-// AssertDecryptedCount asserts the exact number of decryptions
+// AssertDecryptedCount asserts the exact number of decryptions.
 func (a *Adapter) AssertDecryptedCount(t testing.TB, count int) {
 	t.Helper()
+
 	a.mu.RLock()
 	defer a.mu.RUnlock()
 
@@ -69,9 +74,10 @@ func (a *Adapter) AssertDecryptedCount(t testing.TB, count int) {
 	}
 }
 
-// AssertDecryptedString asserts that a specific ciphertext was decrypted
+// AssertDecryptedString asserts that a specific ciphertext was decrypted.
 func (a *Adapter) AssertDecryptedString(t testing.TB, ciphertext string) {
 	t.Helper()
+
 	a.mu.RLock()
 	defer a.mu.RUnlock()
 
@@ -84,9 +90,10 @@ func (a *Adapter) AssertDecryptedString(t testing.TB, ciphertext string) {
 	t.Errorf("Expected ciphertext %q to be decrypted, but it was not", ciphertext)
 }
 
-// AssertNothingEncrypted asserts that no encryptions occurred
+// AssertNothingEncrypted asserts that no encryptions occurred.
 func (a *Adapter) AssertNothingEncrypted(t testing.TB) {
 	t.Helper()
+
 	a.mu.RLock()
 	defer a.mu.RUnlock()
 
@@ -95,9 +102,10 @@ func (a *Adapter) AssertNothingEncrypted(t testing.TB) {
 	}
 }
 
-// AssertNothingDecrypted asserts that no decryptions occurred
+// AssertNothingDecrypted asserts that no decryptions occurred.
 func (a *Adapter) AssertNothingDecrypted(t testing.TB) {
 	t.Helper()
+
 	a.mu.RLock()
 	defer a.mu.RUnlock()
 

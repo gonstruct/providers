@@ -25,6 +25,7 @@ func (a *Adapter) listFiles(directory string, recursive bool) []string {
 	defer a.mu.RUnlock()
 
 	var files []string
+
 	prefix := directory
 	if prefix != "" && prefix[len(prefix)-1] != '/' {
 		prefix += "/"
@@ -52,6 +53,7 @@ func containsSlash(s string) bool {
 			return true
 		}
 	}
+
 	return false
 }
 
@@ -76,6 +78,7 @@ func (a *Adapter) listDirectories(directory string, recursive bool) []string {
 	defer a.mu.RUnlock()
 
 	dirs := make(map[string]bool)
+
 	prefix := directory
 	if prefix != "" && prefix[len(prefix)-1] != '/' {
 		prefix += "/"
@@ -89,6 +92,7 @@ func (a *Adapter) listDirectories(directory string, recursive bool) []string {
 			} else {
 				rest = path[len(prefix):]
 			}
+
 			for i, c := range rest {
 				if c == '/' {
 					var dir string
@@ -97,7 +101,9 @@ func (a *Adapter) listDirectories(directory string, recursive bool) []string {
 					} else {
 						dir = prefix + rest[:i]
 					}
+
 					dirs[dir] = true
+
 					if !recursive {
 						break
 					}
@@ -118,6 +124,7 @@ func (a *Adapter) MakeDirectory(ctx context.Context, path string) error {
 	if a.MakeDirectoryError != nil {
 		return a.MakeDirectoryError
 	}
+
 	return nil
 }
 
