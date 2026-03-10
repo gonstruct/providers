@@ -13,6 +13,10 @@ import (
 func PutFile(path string, file file.File, optionSlice ...Option) (*entities.StorageObject, error) {
 	options := apply(optionSlice...)
 
+	if !options.MimeTypes.IsAccepted(file.MimeType()) {
+		return nil, ErrMimeTypeNotAccepted
+	}
+
 	return options.Adapter.PutFile(options.Context, entities.StorageInput{
 		ID:   options.GenerateUniqueID(),
 		File: file,
@@ -23,17 +27,24 @@ func PutFile(path string, file file.File, optionSlice ...Option) (*entities.Stor
 func Put(path string, contents []byte, optionSlice ...Option) error {
 	options := apply(optionSlice...)
 
+	if !options.MimeTypes.IsAcceptedPath(path, "application/octet-stream") {
+		return ErrMimeTypeNotAccepted
+	}
+
 	return options.Adapter.Put(options.Context, path, contents)
 }
 
 func PutStream(path string, stream io.Reader, optionSlice ...Option) error {
 	options := apply(optionSlice...)
 
+	if !options.MimeTypes.IsAcceptedPath(path, "application/octet-stream") {
+		return ErrMimeTypeNotAccepted
+	}
+
 	return options.Adapter.PutStream(options.Context, path, stream)
 }
 
-// Reading files
-
+// Get files.
 func Get(path string, optionSlice ...Option) ([]byte, error) {
 	options := apply(optionSlice...)
 

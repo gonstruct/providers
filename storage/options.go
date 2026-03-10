@@ -11,6 +11,7 @@ type options struct {
 	Context          context.Context
 	Adapter          contracts.Storage
 	GenerateUniqueID func() string
+	MimeTypes        MimeTypes
 }
 
 type Option func(*options)
@@ -20,6 +21,7 @@ func apply(optionSlice ...Option) *options {
 		Context:          context.Background(),
 		Adapter:          globalProvider.adapter,
 		GenerateUniqueID: func() string { return uuid.NewString() },
+		MimeTypes:        NewMimeTypes(),
 	}
 
 	for _, option := range optionSlice {
@@ -44,5 +46,11 @@ func WithAdapter(adapter contracts.Storage) Option {
 func WithUniqueIDGenerator(generateUniqueID func() string) Option {
 	return func(options *options) {
 		options.GenerateUniqueID = generateUniqueID
+	}
+}
+
+func WithAllowedMimeTypes(mimeTypes ...string) Option {
+	return func(options *options) {
+		options.MimeTypes = NewMimeTypes(mimeTypes...)
 	}
 }

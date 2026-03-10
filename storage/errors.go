@@ -7,11 +7,12 @@ import (
 
 // Sentinel errors for storage operations.
 var (
-	ErrFileNotFound      = errors.New("file not found")
-	ErrDirectoryNotFound = errors.New("directory not found")
-	ErrPermissionDenied  = errors.New("permission denied")
-	ErrInvalidPath       = errors.New("invalid path")
-	ErrAlreadyExists     = errors.New("file already exists")
+	ErrFileNotFound        = errors.New("file not found")
+	ErrDirectoryNotFound   = errors.New("directory not found")
+	ErrPermissionDenied    = errors.New("permission denied")
+	ErrInvalidPath         = errors.New("invalid path")
+	ErrAlreadyExists       = errors.New("file already exists")
+	ErrMimeTypeNotAccepted = errors.New("mime type not accepted")
 )
 
 // Err wraps an error with storage context.

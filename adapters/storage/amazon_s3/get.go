@@ -1,7 +1,6 @@
 package amazon_s3
 
 import (
-	"bytes"
 	"context"
 	"io"
 	"time"
@@ -140,60 +139,4 @@ func (adapter Adapter) MimeType(ctx context.Context, path string) (string, error
 
 	// Fallback to extension-based detection
 	return gomime.TypeByExtension(path), nil
-}
-
-// Put stores raw bytes at the given path.
-func (adapter Adapter) Put(ctx context.Context, path string, contents []byte) error {
-	client, err := adapter.NewClient(ctx)
-	if err != nil {
-		return storage.Err("create S3 client", err)
-	}
-
-	mimetype := gomime.TypeByExtension(path)
-	if mimetype == "" {
-		mimetype = "application/octet-stream"
-	}
-
-	_, err = client.PutObject(ctx, &s3.PutObjectInput{
-		Bucket:      aws.String(adapter.Bucket),
-		Key:         aws.String(path),
-		Body:        bytes.NewReader(contents),
-		ContentType: aws.String(mimetype),
-	})
-	if err != nil {
-		return storage.PathErr("put", path, err)
-	}
-
-	return nil
-}
-
-// PutStream stores content from a reader at the given path.
-func (adapter Adapter) PutStream(ctx context.Context, path string, stream io.Reader) error {
-	client, err := adapter.NewClient(ctx)
-	if err != nil {
-		return storage.Err("create S3 client", err)
-	}
-
-	mimetype := gomime.TypeByExtension(path)
-	if mimetype == "" {
-		mimetype = "application/octet-stream"
-	}
-
-	// Read stream into bytes (S3 SDK requires seekable body for retries)
-	content, err := io.ReadAll(stream)
-	if err != nil {
-		return storage.Err("read stream", err)
-	}
-
-	_, err = client.PutObject(ctx, &s3.PutObjectInput{
-		Bucket:      aws.String(adapter.Bucket),
-		Key:         aws.String(path),
-		Body:        bytes.NewReader(content),
-		ContentType: aws.String(mimetype),
-	})
-	if err != nil {
-		return storage.PathErr("put stream", path, err)
-	}
-
-	return nil
 }

@@ -8,6 +8,8 @@ import (
 	"net/http"
 	"path/filepath"
 	"strings"
+
+	gomime "github.com/cubewise-code/go-mime"
 )
 
 type File struct {
@@ -17,6 +19,10 @@ type File struct {
 
 func (file File) Extension() string {
 	return strings.ToLower(filepath.Ext(file.Name))
+}
+
+func (file File) MimeType() string {
+	return gomime.TypeByExtension(file.Extension())
 }
 
 func FromReader(name string, body io.ReadSeeker) File {

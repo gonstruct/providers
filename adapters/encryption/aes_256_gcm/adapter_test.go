@@ -226,6 +226,7 @@ func TestDecrypt_WithPreviousKeys(t *testing.T) {
 	oldKey := make([]byte, 32)
 
 	newKey := make([]byte, 32)
+
 	for i := range oldKey {
 		oldKey[i] = byte(i)
 		newKey[i] = byte(i + 100)
