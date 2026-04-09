@@ -3,7 +3,7 @@ package amazon_s3
 import (
 	"context"
 	"fmt"
-	"time"
+	"path"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
@@ -23,25 +23,28 @@ func (adapter Adapter) URL(path string) string {
 // TemporaryURL generates a presigned URL with an expiration time.
 func (adapter Adapter) TemporaryURL(
 	ctx context.Context,
-	path string,
-	expiration time.Duration,
-) (*entities.PresignedObject, error) {
+	input entities.TemporaryStorageInput,
+) (*entities.TemporaryStorageObject, error) {
+	extension := input.File.Extension()
+
+	key := path.Join(input.Path, input.ID+extension)
+
 	client, err := adapter.NewClient(ctx)
 	if err != nil {
 		return nil, storage.Err("create S3 client", err)
 	}
 
-	presignClient := s3.NewPresignClient(client)
-
-	result, err := presignClient.PresignGetObject(ctx, &s3.GetObjectInput{
+	result, err := s3.NewPresignClient(client).PresignGetObject(ctx, &s3.GetObjectInput{
 		Bucket: aws.String(adapter.Bucket),
-		Key:    aws.String(path),
-	}, s3.WithPresignExpires(expiration))
+		Key:    aws.String(key),
+	}, s3.WithPresignExpires(input.Expiry))
 	if err != nil {
-		return nil, storage.PathErr("generate presigned url", path, err)
+		return nil, storage.PathErr("generate presigned url", key, err)
 	}
 
-	return &entities.PresignedObject{
+	return &entities.TemporaryStorageObject{
+		Name:         input.Name(),
+		Path:         key,
 		URL:          result.URL,
 		Method:       result.Method,
 		SignedHeader: result.SignedHeader,
@@ -50,25 +53,31 @@ func (adapter Adapter) TemporaryURL(
 
 func (adapter Adapter) TemporaryUploadURL(
 	ctx context.Context,
-	path string,
-	expiration time.Duration,
-) (*entities.PresignedObject, error) {
+	input entities.TemporaryStorageInput,
+) (*entities.TemporaryStorageObject, error) {
+	extension := input.File.Extension()
+	mimetype := input.File.MimeType()
+
+	key := path.Join(input.Path, input.ID+extension)
+
 	client, err := adapter.NewClient(ctx)
 	if err != nil {
 		return nil, storage.Err("create S3 client", err)
 	}
 
-	presignClient := s3.NewPresignClient(client)
-
-	result, err := presignClient.PresignPutObject(ctx, &s3.PutObjectInput{
-		Bucket: aws.String(adapter.Bucket),
-		Key:    aws.String(path),
-	}, s3.WithPresignExpires(expiration))
+	result, err := s3.NewPresignClient(client).PresignPutObject(ctx, &s3.PutObjectInput{
+		Bucket:      aws.String(adapter.Bucket),
+		Key:         aws.String(key),
+		ContentType: aws.String(mimetype),
+		ACL:         storageVisibilityToS3ACL(input.Visibility),
+	}, s3.WithPresignExpires(input.Expiry))
 	if err != nil {
-		return nil, storage.PathErr("generate presigned upload url", path, err)
+		return nil, storage.PathErr("generate presigned upload url", key, err)
 	}
 
-	return &entities.PresignedObject{
+	return &entities.TemporaryStorageObject{
+		Name:         input.Name(),
+		Path:         key,
 		URL:          result.URL,
 		Method:       result.Method,
 		SignedHeader: result.SignedHeader,

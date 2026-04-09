@@ -3,7 +3,6 @@ package local
 import (
 	"context"
 	"errors"
-	"time"
 
 	"github.com/gonstruct/providers/entities"
 	"github.com/gonstruct/providers/storage"
@@ -23,9 +22,8 @@ func (a *Adapter) URL(filePath string) string {
 // Local storage does not support presigned URLs natively, so this method returns an error.
 func (a *Adapter) TemporaryURL(
 	ctx context.Context,
-	filePath string,
-	expiration time.Duration,
-) (*entities.PresignedObject, error) {
+	input entities.TemporaryStorageInput,
+) (*entities.TemporaryStorageObject, error) {
 	return nil, storage.Err(
 		"temporary url",
 		errors.New("Local storage does not support temporary URLs; implement signed URL logic in your application"),
@@ -36,9 +34,8 @@ func (a *Adapter) TemporaryURL(
 // Local storage does not support presigned URLs natively, so this method returns an error.
 func (a *Adapter) TemporaryUploadURL(
 	ctx context.Context,
-	filePath string,
-	expiration time.Duration,
-) (*entities.PresignedObject, error) {
+	input entities.TemporaryStorageInput,
+) (*entities.TemporaryStorageObject, error) {
 	return nil, storage.Err(
 		"temporary upload url",
 		errors.New("Local storage does not support temporary upload URLs; implement signed URL logic in your application"),

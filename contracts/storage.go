@@ -45,6 +45,6 @@ type Storage interface {
 
 	// URLs and presigned URLs. Unsupported adapters may return an empty URL or an error.
 	URL(path string) string
-	TemporaryURL(ctx context.Context, path string, expiration time.Duration) (*entities.PresignedObject, error)
-	TemporaryUploadURL(ctx context.Context, path string, expiration time.Duration) (*entities.PresignedObject, error)
+	TemporaryURL(ctx context.Context, input entities.TemporaryStorageInput) (*entities.TemporaryStorageObject, error)
+	TemporaryUploadURL(ctx context.Context, input entities.TemporaryStorageInput) (*entities.TemporaryStorageObject, error)
 }

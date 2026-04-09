@@ -2,6 +2,7 @@ package storage
 
 import (
 	"io"
+	"path"
 	"time"
 
 	"github.com/gonstruct/providers/entities"
@@ -162,25 +163,58 @@ func DeleteDirectory(directory string, optionSlice ...Option) error {
 }
 
 // URLs
-
 func URL(path string, optionSlice ...Option) string {
 	options := apply(optionSlice...)
 
 	return options.Adapter.URL(path)
 }
 
-func TemporaryURL(path string, expiration time.Duration, optionSlice ...Option) (*entities.PresignedObject, error) {
+func TemporaryURL(name string, expiration time.Duration, optionSlice ...Option) (*entities.TemporaryStorageObject, error) {
 	options := apply(optionSlice...)
 
-	return options.Adapter.TemporaryURL(options.Context, path, expiration)
+	baseName := path.Base(name)
+	directory := path.Dir(name)
+	if directory == "." {
+		directory = ""
+	}
+
+	file := file.File{Name: baseName}
+	if !options.MimeTypes.IsAccepted(file.MimeType()) {
+		return nil, ErrMimeTypeNotAccepted
+	}
+
+	return options.Adapter.TemporaryURL(options.Context, entities.TemporaryStorageInput{
+		ID:         options.GenerateUniqueID(),
+		File:       file,
+		Path:       directory,
+		Visibility: options.Visibility,
+		Expiry:     expiration,
+	})
 }
 
 func TemporaryUploadURL(
-	path string,
+	name string,
 	expiration time.Duration,
 	optionSlice ...Option,
-) (*entities.PresignedObject, error) {
+) (*entities.TemporaryStorageObject, error) {
 	options := apply(optionSlice...)
 
-	return options.Adapter.TemporaryUploadURL(options.Context, path, expiration)
+	baseName := path.Base(name)
+	directory := path.Dir(name)
+	if directory == "." {
+		directory = ""
+	}
+
+	file := file.File{Name: baseName}
+	if !options.MimeTypes.IsAccepted(file.MimeType()) {
+		return nil, ErrMimeTypeNotAccepted
+	}
+
+	return options.Adapter.TemporaryUploadURL(options.Context, entities.TemporaryStorageInput{
+		ID:         options.GenerateUniqueID(),
+		File:       file,
+		Path:       directory,
+		Visibility: options.Visibility,
+		Expiry:     expiration,
+	})
 }

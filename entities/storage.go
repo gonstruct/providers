@@ -3,6 +3,7 @@ package entities
 import (
 	"net/http"
 	"strings"
+	"time"
 
 	"github.com/gonstruct/providers/entities/file"
 )
@@ -32,8 +33,22 @@ type StorageObject struct {
 	MimeType string
 }
 
-// PresignedObject contains information about a presigned URL for temporary access.
-type PresignedObject struct {
+// TemporaryStorageObject contains information about a temporary storage object, such as a presigned URL.
+type TemporaryStorageInput struct {
+	ID         string
+	File       file.File
+	Path       string
+	Visibility Visibility
+	Expiry     time.Duration
+}
+
+func (i TemporaryStorageInput) Name() string {
+	return strings.TrimSuffix(i.File.Name, i.File.Extension())
+}
+
+type TemporaryStorageObject struct {
+	Name         string
+	Path         string
 	URL          string
 	Method       string
 	SignedHeader http.Header

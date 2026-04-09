@@ -5,7 +5,6 @@ import (
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
-	"github.com/aws/aws-sdk-go-v2/service/s3/types"
 	"github.com/gonstruct/providers/entities"
 	"github.com/gonstruct/providers/storage"
 )
@@ -44,21 +43,10 @@ func (adapter Adapter) SetVisibility(ctx context.Context, path string, visibilit
 		return storage.Err("create S3 client", err)
 	}
 
-	var acl types.ObjectCannedACL
-
-	switch visibility {
-	case entities.VisibilityPublic:
-		acl = types.ObjectCannedACLPublicRead
-	case entities.VisibilityPrivate:
-		acl = types.ObjectCannedACLPrivate
-	default:
-		acl = types.ObjectCannedACLPrivate
-	}
-
 	_, err = client.PutObjectAcl(ctx, &s3.PutObjectAclInput{
 		Bucket: aws.String(adapter.Bucket),
 		Key:    aws.String(path),
-		ACL:    acl,
+		ACL:    storageVisibilityToS3ACL(visibility),
 	})
 	if err != nil {
 		return storage.PathErr("set visibility", path, err)

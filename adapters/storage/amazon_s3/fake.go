@@ -5,6 +5,7 @@ import (
 	"context"
 	"errors"
 	"io"
+	"path"
 	"sync"
 	"time"
 
@@ -454,30 +455,36 @@ func (a *FakeAdapter) URL(path string) string {
 
 func (a *FakeAdapter) TemporaryURL(
 	ctx context.Context,
-	path string,
-	expiration time.Duration,
-) (*entities.PresignedObject, error) {
+	input entities.TemporaryStorageInput,
+) (*entities.TemporaryStorageObject, error) {
 	if a.TemporaryURLError != nil {
 		return nil, a.TemporaryURLError
 	}
 
-	return &entities.PresignedObject{
-		URL:    a.URL(path) + "?expires=" + time.Now().Add(expiration).Format(time.RFC3339),
+	key := path.Join(input.Path, input.ID+input.File.Extension())
+
+	return &entities.TemporaryStorageObject{
+		Name:   input.Name(),
+		Path:   key,
+		URL:    a.URL(key) + "?expires=" + time.Now().Add(input.Expiry).Format(time.RFC3339),
 		Method: "GET",
 	}, nil
 }
 
 func (a *FakeAdapter) TemporaryUploadURL(
 	ctx context.Context,
-	path string,
-	expiration time.Duration,
-) (*entities.PresignedObject, error) {
+	input entities.TemporaryStorageInput,
+) (*entities.TemporaryStorageObject, error) {
 	if a.TemporaryUploadURLError != nil {
 		return nil, a.TemporaryUploadURLError
 	}
 
-	return &entities.PresignedObject{
-		URL:    a.URL(path) + "?expires=" + time.Now().Add(expiration).Format(time.RFC3339),
+	key := path.Join(input.Path, input.ID+input.File.Extension())
+
+	return &entities.TemporaryStorageObject{
+		Name:   input.Name(),
+		Path:   key,
+		URL:    a.URL(key) + "?expires=" + time.Now().Add(input.Expiry).Format(time.RFC3339),
 		Method: "PUT",
 	}, nil
 }

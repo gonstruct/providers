@@ -486,7 +486,11 @@ func TestAdapter_TemporaryURL(t *testing.T) {
 		t.Fatalf("Put() error = %v", err)
 	}
 
-	_, err := adapter.TemporaryURL(ctx, path, time.Hour)
+	_, err := adapter.TemporaryURL(ctx, entities.TemporaryStorageInput{
+		Path:   "test",
+		File:   file.File{Name: "temp.txt"},
+		Expiry: time.Hour,
+	})
 	if err == nil {
 		t.Error("TemporaryURL() should return error")
 	}
@@ -502,7 +506,11 @@ func TestAdapter_TemporaryUploadURL(t *testing.T) {
 		t.Fatalf("Put() error = %v", err)
 	}
 
-	_, err := adapter.TemporaryUploadURL(ctx, path, time.Hour)
+	_, err := adapter.TemporaryUploadURL(ctx, entities.TemporaryStorageInput{
+		Path:   "test",
+		File:   file.File{Name: "temp.txt"},
+		Expiry: time.Hour,
+	})
 	if err == nil {
 		t.Error("TemporaryUploadURL() should return error")
 	}

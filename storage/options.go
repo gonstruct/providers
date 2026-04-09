@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/gonstruct/providers/contracts"
+	"github.com/gonstruct/providers/entities"
 	"github.com/google/uuid"
 )
 
@@ -12,6 +13,7 @@ type options struct {
 	Adapter          contracts.Storage
 	GenerateUniqueID func() string
 	MimeTypes        MimeTypes
+	Visibility       entities.Visibility
 }
 
 type Option func(*options)
@@ -52,5 +54,11 @@ func WithUniqueIDGenerator(generateUniqueID func() string) Option {
 func WithAllowedMimeTypes(mimeTypes ...string) Option {
 	return func(options *options) {
 		options.MimeTypes = NewMimeTypes(mimeTypes...)
+	}
+}
+
+func WithVisibility(visibility entities.Visibility) Option {
+	return func(options *options) {
+		options.Visibility = visibility
 	}
 }
