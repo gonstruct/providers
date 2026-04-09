@@ -16,7 +16,11 @@ func (a *Adapter) URL(path string) string {
 	return a.BaseURL + "/" + path
 }
 
-func (a *Adapter) TemporaryURL(ctx context.Context, path string, expiration time.Duration) (*entities.PresignedObject, error) {
+func (a *Adapter) TemporaryURL(
+	ctx context.Context,
+	path string,
+	expiration time.Duration,
+) (*entities.PresignedObject, error) {
 	if a.TemporaryURLError != nil {
 		return nil, a.TemporaryURLError
 	}
@@ -27,7 +31,11 @@ func (a *Adapter) TemporaryURL(ctx context.Context, path string, expiration time
 	}, nil
 }
 
-func (a *Adapter) TemporaryUploadURL(ctx context.Context, path string, expiration time.Duration) (*entities.PresignedObject, error) {
+func (a *Adapter) TemporaryUploadURL(
+	ctx context.Context,
+	path string,
+	expiration time.Duration,
+) (*entities.PresignedObject, error) {
 	if a.TemporaryUploadURLError != nil {
 		return nil, a.TemporaryUploadURLError
 	}

@@ -21,7 +21,11 @@ func (adapter Adapter) URL(path string) string {
 }
 
 // TemporaryURL generates a presigned URL with an expiration time.
-func (adapter Adapter) TemporaryURL(ctx context.Context, path string, expiration time.Duration) (*entities.PresignedObject, error) {
+func (adapter Adapter) TemporaryURL(
+	ctx context.Context,
+	path string,
+	expiration time.Duration,
+) (*entities.PresignedObject, error) {
 	client, err := adapter.NewClient(ctx)
 	if err != nil {
 		return nil, storage.Err("create S3 client", err)
@@ -44,7 +48,11 @@ func (adapter Adapter) TemporaryURL(ctx context.Context, path string, expiration
 	}, nil
 }
 
-func (adapter Adapter) TemporaryUploadURL(ctx context.Context, path string, expiration time.Duration) (*entities.PresignedObject, error) {
+func (adapter Adapter) TemporaryUploadURL(
+	ctx context.Context,
+	path string,
+	expiration time.Duration,
+) (*entities.PresignedObject, error) {
 	client, err := adapter.NewClient(ctx)
 	if err != nil {
 		return nil, storage.Err("create S3 client", err)

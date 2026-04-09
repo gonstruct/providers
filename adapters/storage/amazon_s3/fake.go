@@ -17,25 +17,25 @@ type FakeAdapter struct {
 	files map[string]*fakeFile
 
 	// Error injection
-	PutFileError       error
-	PutError           error
-	PutStreamError     error
-	GetError           error
-	GetStreamError     error
-	ExistsError        error
-	SizeError          error
-	LastModifiedError  error
-	MimeTypeError      error
-	CopyError          error
-	MoveError          error
-	DeleteError        error
-	GetVisibilityError error
-	SetVisibilityError error
-	FilesError         error
-	DirectoriesError   error
-	MakeDirectoryError error
-	DeleteDirError     error
-	TemporaryURLError  error
+	PutFileError            error
+	PutError                error
+	PutStreamError          error
+	GetError                error
+	GetStreamError          error
+	ExistsError             error
+	SizeError               error
+	LastModifiedError       error
+	MimeTypeError           error
+	CopyError               error
+	MoveError               error
+	DeleteError             error
+	GetVisibilityError      error
+	SetVisibilityError      error
+	FilesError              error
+	DirectoriesError        error
+	MakeDirectoryError      error
+	DeleteDirError          error
+	TemporaryURLError       error
 	TemporaryUploadURLError error
 
 	BaseURL string
@@ -452,7 +452,11 @@ func (a *FakeAdapter) URL(path string) string {
 	return a.BaseURL + "/" + path
 }
 
-func (a *FakeAdapter) TemporaryURL(ctx context.Context, path string, expiration time.Duration) (*entities.PresignedObject, error) {
+func (a *FakeAdapter) TemporaryURL(
+	ctx context.Context,
+	path string,
+	expiration time.Duration,
+) (*entities.PresignedObject, error) {
 	if a.TemporaryURLError != nil {
 		return nil, a.TemporaryURLError
 	}
@@ -463,7 +467,11 @@ func (a *FakeAdapter) TemporaryURL(ctx context.Context, path string, expiration 
 	}, nil
 }
 
-func (a *FakeAdapter) TemporaryUploadURL(ctx context.Context, path string, expiration time.Duration) (*entities.PresignedObject, error) {
+func (a *FakeAdapter) TemporaryUploadURL(
+	ctx context.Context,
+	path string,
+	expiration time.Duration,
+) (*entities.PresignedObject, error) {
 	if a.TemporaryUploadURLError != nil {
 		return nil, a.TemporaryUploadURLError
 	}

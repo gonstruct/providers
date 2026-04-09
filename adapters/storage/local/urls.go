@@ -21,7 +21,11 @@ func (a *Adapter) URL(filePath string) string {
 
 // TemporaryURL generates a presigned URL with an expiration time.
 // Local storage does not support presigned URLs natively, so this method returns an error.
-func (a *Adapter) TemporaryURL(ctx context.Context, filePath string, expiration time.Duration) (*entities.PresignedObject, error) {
+func (a *Adapter) TemporaryURL(
+	ctx context.Context,
+	filePath string,
+	expiration time.Duration,
+) (*entities.PresignedObject, error) {
 	return nil, storage.Err(
 		"temporary url",
 		errors.New("Local storage does not support temporary URLs; implement signed URL logic in your application"),
@@ -30,7 +34,11 @@ func (a *Adapter) TemporaryURL(ctx context.Context, filePath string, expiration 
 
 // TemporaryUploadURL generates a presigned URL for uploading with an expiration time.
 // Local storage does not support presigned URLs natively, so this method returns an error.
-func (a *Adapter) TemporaryUploadURL(ctx context.Context, filePath string, expiration time.Duration) (*entities.PresignedObject, error) {
+func (a *Adapter) TemporaryUploadURL(
+	ctx context.Context,
+	filePath string,
+	expiration time.Duration,
+) (*entities.PresignedObject, error) {
 	return nil, storage.Err(
 		"temporary upload url",
 		errors.New("Local storage does not support temporary upload URLs; implement signed URL logic in your application"),
