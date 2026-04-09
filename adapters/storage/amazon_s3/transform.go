@@ -13,7 +13,6 @@ func storageVisibilityToS3ACL(visibility entities.Visibility) types.ObjectCanned
 		return types.ObjectCannedACLPrivate
 	default:
 		return ""
-
 	}
 }
 

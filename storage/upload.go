@@ -162,17 +162,22 @@ func DeleteDirectory(directory string, optionSlice ...Option) error {
 	return options.Adapter.DeleteDirectory(options.Context, directory)
 }
 
-// URLs
+// URL returns the public URL for the given path.
 func URL(path string, optionSlice ...Option) string {
 	options := apply(optionSlice...)
 
 	return options.Adapter.URL(path)
 }
 
-func TemporaryURL(name string, expiration time.Duration, optionSlice ...Option) (*entities.TemporaryStorageObject, error) {
+func TemporaryURL(
+	name string,
+	expiration time.Duration,
+	optionSlice ...Option,
+) (*entities.TemporaryStorageObject, error) {
 	options := apply(optionSlice...)
 
 	baseName := path.Base(name)
+
 	directory := path.Dir(name)
 	if directory == "." {
 		directory = ""
@@ -200,6 +205,7 @@ func TemporaryUploadURL(
 	options := apply(optionSlice...)
 
 	baseName := path.Base(name)
+
 	directory := path.Dir(name)
 	if directory == "." {
 		directory = ""

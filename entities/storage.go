@@ -33,7 +33,7 @@ type StorageObject struct {
 	MimeType string
 }
 
-// TemporaryStorageObject contains information about a temporary storage object, such as a presigned URL.
+// TemporaryStorageInput contains the information required to create a temporary storage object.
 type TemporaryStorageInput struct {
 	ID         string
 	File       file.File
