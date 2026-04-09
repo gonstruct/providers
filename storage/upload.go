@@ -169,8 +169,14 @@ func URL(path string, optionSlice ...Option) string {
 	return options.Adapter.URL(path)
 }
 
-func TemporaryURL(path string, expiration time.Duration, optionSlice ...Option) (string, error) {
+func TemporaryURL(path string, expiration time.Duration, optionSlice ...Option) (*entities.PresignedObject, error) {
 	options := apply(optionSlice...)
 
 	return options.Adapter.TemporaryURL(options.Context, path, expiration)
+}
+
+func TemporaryUploadURL(path string, expiration time.Duration, optionSlice ...Option) (*entities.PresignedObject, error) {
+	options := apply(optionSlice...)
+
+	return options.Adapter.TemporaryUploadURL(options.Context, path, expiration)
 }

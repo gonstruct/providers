@@ -1,6 +1,7 @@
 package entities
 
 import (
+	"net/http"
 	"strings"
 
 	"github.com/gonstruct/providers/entities/file"
@@ -29,4 +30,11 @@ type StorageObject struct {
 	Name     string
 	Path     string
 	MimeType string
+}
+
+// PresignedObject contains information about a presigned URL for temporary access.
+type PresignedObject struct {
+	URL          string
+	Method       string
+	SignedHeader http.Header
 }

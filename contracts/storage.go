@@ -43,7 +43,8 @@ type Storage interface {
 	MakeDirectory(ctx context.Context, path string) error
 	DeleteDirectory(ctx context.Context, directory string) error
 
-	// URLs (optional - may return empty string if not supported)
+	// URLs and presigned URLs. Unsupported adapters may return an empty URL or an error.
 	URL(path string) string
-	TemporaryURL(ctx context.Context, path string, expiration time.Duration) (string, error)
+	TemporaryURL(ctx context.Context, path string, expiration time.Duration) (*entities.PresignedObject, error)
+	TemporaryUploadURL(ctx context.Context, path string, expiration time.Duration) (*entities.PresignedObject, error)
 }

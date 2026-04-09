@@ -7,6 +7,7 @@ import (
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
+	"github.com/gonstruct/providers/entities"
 	"github.com/gonstruct/providers/storage"
 )
 
@@ -20,10 +21,10 @@ func (adapter Adapter) URL(path string) string {
 }
 
 // TemporaryURL generates a presigned URL with an expiration time.
-func (adapter Adapter) TemporaryURL(ctx context.Context, path string, expiration time.Duration) (string, error) {
+func (adapter Adapter) TemporaryURL(ctx context.Context, path string, expiration time.Duration) (*entities.PresignedObject, error) {
 	client, err := adapter.NewClient(ctx)
 	if err != nil {
-		return "", storage.Err("create S3 client", err)
+		return nil, storage.Err("create S3 client", err)
 	}
 
 	presignClient := s3.NewPresignClient(client)
@@ -33,8 +34,35 @@ func (adapter Adapter) TemporaryURL(ctx context.Context, path string, expiration
 		Key:    aws.String(path),
 	}, s3.WithPresignExpires(expiration))
 	if err != nil {
-		return "", storage.PathErr("generate presigned url", path, err)
+		return nil, storage.PathErr("generate presigned url", path, err)
 	}
 
-	return result.URL, nil
+	return &entities.PresignedObject{
+		URL:          result.URL,
+		Method:       result.Method,
+		SignedHeader: result.SignedHeader,
+	}, nil
+}
+
+func (adapter Adapter) TemporaryUploadURL(ctx context.Context, path string, expiration time.Duration) (*entities.PresignedObject, error) {
+	client, err := adapter.NewClient(ctx)
+	if err != nil {
+		return nil, storage.Err("create S3 client", err)
+	}
+
+	presignClient := s3.NewPresignClient(client)
+
+	result, err := presignClient.PresignPutObject(ctx, &s3.PutObjectInput{
+		Bucket: aws.String(adapter.Bucket),
+		Key:    aws.String(path),
+	}, s3.WithPresignExpires(expiration))
+	if err != nil {
+		return nil, storage.PathErr("generate presigned upload url", path, err)
+	}
+
+	return &entities.PresignedObject{
+		URL:          result.URL,
+		Method:       result.Method,
+		SignedHeader: result.SignedHeader,
+	}, nil
 }

@@ -32,6 +32,8 @@ func (adapter Adapter) NewClient(ctx context.Context) (*s3.Client, error) {
 
 	return s3.NewFromConfig(cfg, func(o *s3.Options) {
 		o.UsePathStyle = adapter.UsePathStyle
-		o.BaseEndpoint = aws.String(adapter.Endpoint)
+		if adapter.Endpoint != "" {
+			o.BaseEndpoint = aws.String(adapter.Endpoint)
+		}
 	}), nil
 }

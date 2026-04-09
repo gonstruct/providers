@@ -3,9 +3,9 @@ package local
 import (
 	"context"
 	"errors"
-	"path"
 	"time"
 
+	"github.com/gonstruct/providers/entities"
 	"github.com/gonstruct/providers/storage"
 )
 
@@ -19,29 +19,20 @@ func (a *Adapter) URL(filePath string) string {
 	return a.BaseURL + "/" + filePath
 }
 
-// TemporaryURL generates a temporary URL for the file
-// Local storage doesn't natively support signed URLs, so this returns an error
-// You can implement signed URL support using your application's routing.
-func (a *Adapter) TemporaryURL(ctx context.Context, filePath string, expiration time.Duration) (string, error) {
-	// Check if file exists first
-	exists, err := a.Exists(ctx, filePath)
-	if err != nil {
-		return "", err
-	}
+// TemporaryURL generates a presigned URL with an expiration time.
+// Local storage does not support presigned URLs natively, so this method returns an error.
+func (a *Adapter) TemporaryURL(ctx context.Context, filePath string, expiration time.Duration) (*entities.PresignedObject, error) {
+	return nil, storage.Err(
+		"temporary url",
+		errors.New("Local storage does not support temporary URLs; implement signed URL logic in your application"),
+	)
+}
 
-	if !exists {
-		return "", storage.PathErr("temporary url", filePath, storage.ErrFileNotFound)
-	}
-
-	// Local storage doesn't support temporary URLs natively
-	// Applications can implement this via their routing layer
-	if a.BaseURL == "" {
-		return "", storage.Err(
-			"temporary url",
-			errors.New("BaseURL not configured; implement signed URL logic in your application"),
-		)
-	}
-
-	// Return the regular URL - implement signing in your application
-	return path.Join(a.BaseURL, filePath), nil
+// TemporaryUploadURL generates a presigned URL for uploading with an expiration time.
+// Local storage does not support presigned URLs natively, so this method returns an error.
+func (a *Adapter) TemporaryUploadURL(ctx context.Context, filePath string, expiration time.Duration) (*entities.PresignedObject, error) {
+	return nil, storage.Err(
+		"temporary upload url",
+		errors.New("Local storage does not support temporary upload URLs; implement signed URL logic in your application"),
+	)
 }

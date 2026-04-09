@@ -486,18 +486,15 @@ func TestAdapter_TemporaryURL(t *testing.T) {
 		t.Fatalf("Put() error = %v", err)
 	}
 
-	url, err := adapter.TemporaryURL(ctx, path, time.Hour)
-	if err != nil {
-		t.Fatalf("TemporaryURL() error = %v", err)
-	}
-
-	if url == "" {
-		t.Error("TemporaryURL() returned empty string")
+	_, err := adapter.TemporaryURL(ctx, path, time.Hour)
+	if err == nil {
+		t.Error("TemporaryURL() should return error")
 	}
 }
 
-func TestAdapter_TemporaryURL_NoBaseURL(t *testing.T) {
+func TestAdapter_TemporaryUploadURL(t *testing.T) {
 	adapter, _ := setupAdapter(t)
+	adapter.BaseURL = "https://example.com/storage"
 	ctx := context.Background()
 
 	path := "test/temp.txt"
@@ -505,9 +502,9 @@ func TestAdapter_TemporaryURL_NoBaseURL(t *testing.T) {
 		t.Fatalf("Put() error = %v", err)
 	}
 
-	_, err := adapter.TemporaryURL(ctx, path, time.Hour)
+	_, err := adapter.TemporaryUploadURL(ctx, path, time.Hour)
 	if err == nil {
-		t.Error("TemporaryURL() without BaseURL should return error")
+		t.Error("TemporaryUploadURL() should return error")
 	}
 }
 

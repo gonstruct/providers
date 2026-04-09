@@ -25,25 +25,26 @@ type Adapter struct {
 	MoveCalls    []MoveCall
 
 	// Error injection
-	PutFileError       error
-	PutError           error
-	PutStreamError     error
-	GetError           error
-	GetStreamError     error
-	ExistsError        error
-	SizeError          error
-	LastModifiedError  error
-	MimeTypeError      error
-	CopyError          error
-	MoveError          error
-	DeleteError        error
-	GetVisibilityError error
-	SetVisibilityError error
-	FilesError         error
-	DirectoriesError   error
-	MakeDirectoryError error
-	DeleteDirError     error
-	TemporaryURLError  error
+	PutFileError            error
+	PutError                error
+	PutStreamError          error
+	GetError                error
+	GetStreamError          error
+	ExistsError             error
+	SizeError               error
+	LastModifiedError       error
+	MimeTypeError           error
+	CopyError               error
+	MoveError               error
+	DeleteError             error
+	GetVisibilityError      error
+	SetVisibilityError      error
+	FilesError              error
+	DirectoriesError        error
+	MakeDirectoryError      error
+	DeleteDirError          error
+	TemporaryURLError       error
+	TemporaryUploadURLError error
 
 	// BaseURL for URL generation
 	BaseURL string

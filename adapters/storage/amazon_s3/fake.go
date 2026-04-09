@@ -36,6 +36,7 @@ type FakeAdapter struct {
 	MakeDirectoryError error
 	DeleteDirError     error
 	TemporaryURLError  error
+	TemporaryUploadURLError error
 
 	BaseURL string
 }
@@ -451,12 +452,26 @@ func (a *FakeAdapter) URL(path string) string {
 	return a.BaseURL + "/" + path
 }
 
-func (a *FakeAdapter) TemporaryURL(ctx context.Context, path string, expiration time.Duration) (string, error) {
+func (a *FakeAdapter) TemporaryURL(ctx context.Context, path string, expiration time.Duration) (*entities.PresignedObject, error) {
 	if a.TemporaryURLError != nil {
-		return "", a.TemporaryURLError
+		return nil, a.TemporaryURLError
 	}
 
-	return a.URL(path) + "?expires=" + time.Now().Add(expiration).Format(time.RFC3339), nil
+	return &entities.PresignedObject{
+		URL:    a.URL(path) + "?expires=" + time.Now().Add(expiration).Format(time.RFC3339),
+		Method: "GET",
+	}, nil
+}
+
+func (a *FakeAdapter) TemporaryUploadURL(ctx context.Context, path string, expiration time.Duration) (*entities.PresignedObject, error) {
+	if a.TemporaryUploadURLError != nil {
+		return nil, a.TemporaryUploadURLError
+	}
+
+	return &entities.PresignedObject{
+		URL:    a.URL(path) + "?expires=" + time.Now().Add(expiration).Format(time.RFC3339),
+		Method: "PUT",
+	}, nil
 }
 
 // Reset clears all stored files.
