@@ -7,6 +7,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/gonstruct/providers/contracts"
 	"github.com/gonstruct/providers/entities"
 	"github.com/gonstruct/providers/entities/mailables"
 	pmail "github.com/gonstruct/providers/mail"
@@ -89,7 +90,8 @@ func TestSend_MergesDefaultEnvelopeAndRendersTemplate(t *testing.T) {
 		t.Fatalf("To = %#v, want user@example.com", call.Input.Envelope.To)
 	}
 
-	if got := emailAddresses(call.Input.Envelope.Cc); !equalStrings(got, []string{"default-cc@example.com", "message-cc@example.com"}) {
+	wantCc := []string{"default-cc@example.com", "message-cc@example.com"}
+	if got := emailAddresses(call.Input.Envelope.Cc); !equalStrings(got, wantCc) {
 		t.Fatalf("Cc = %v, want [default-cc@example.com message-cc@example.com]", got)
 	}
 
@@ -100,6 +102,7 @@ func TestSend_MergesDefaultEnvelopeAndRendersTemplate(t *testing.T) {
 	if got := call.HTML; !strings.Contains(got, "Hello User") {
 		t.Fatalf("HTML = %q, want rendered template content", got)
 	}
+
 	if call.Subject != "Welcome" {
 		t.Fatalf("Subject = %q, want Welcome", call.Subject)
 	}
@@ -138,6 +141,7 @@ func TestSend_DefaultEnvelopeRecipientsDoNotLeakBetweenSends(t *testing.T) {
 	if err := pmail.Send(first); err != nil {
 		t.Fatalf("first Send() error = %v", err)
 	}
+
 	if err := pmail.Send(second); err != nil {
 		t.Fatalf("second Send() error = %v", err)
 	}
@@ -180,15 +184,19 @@ func TestSend_UsesPerCallAdapterAndContext(t *testing.T) {
 	if adapter.calls != 1 {
 		t.Fatalf("adapter calls = %d, want 1", adapter.calls)
 	}
+
 	if providerAdapter.SentCount() != 0 {
 		t.Fatalf("provider adapter sent count = %d, want 0", providerAdapter.SentCount())
 	}
+
 	if got := adapter.ctx.Value(ctxKey); got != "trace-id" {
 		t.Fatalf("context value = %v, want trace-id", got)
 	}
+
 	if got := adapter.input.Envelope.To[0].Address; got != "context@example.com" {
 		t.Fatalf("To = %q, want context@example.com", got)
 	}
+
 	if got := adapter.input.Html.String(); !strings.Contains(got, "Hello Context") {
 		t.Fatalf("HTML = %q, want rendered content", got)
 	}
@@ -223,15 +231,19 @@ func TestSend_PassesAttachmentsThrough(t *testing.T) {
 	if call == nil {
 		t.Fatal("LastCall() = nil, want recorded call")
 	}
+
 	if len(call.Input.Attachments) != 1 {
 		t.Fatalf("attachments count = %d, want 1", len(call.Input.Attachments))
 	}
+
 	if got := call.Input.Attachments[0].Name; got != "report.txt" {
 		t.Fatalf("attachment name = %q, want report.txt", got)
 	}
+
 	if got := call.Input.Attachments[0].Mime; got != "text/plain" {
 		t.Fatalf("attachment mime = %q, want text/plain", got)
 	}
+
 	if got := string(call.Input.Attachments[0].Content()); got != "hello" {
 		t.Fatalf("attachment content = %q, want hello", got)
 	}
@@ -250,6 +262,7 @@ func TestSend_ReturnsTemplateParseError(t *testing.T) {
 	if err == nil {
 		t.Fatal("Send() error = nil, want template parse error")
 	}
+
 	if !strings.Contains(err.Error(), "failed to parse email template") {
 		t.Fatalf("error = %q, want parse error", err)
 	}
@@ -287,6 +300,4 @@ func equalStrings(got, want []string) bool {
 	return true
 }
 
-var _ interface {
-	Send(context.Context, entities.MailInput) error
-} = (*capturingAdapter)(nil)
+var _ contracts.Mail = (*capturingAdapter)(nil)
