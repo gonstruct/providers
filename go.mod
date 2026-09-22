@@ -1,8 +1,6 @@
 module github.com/gonstruct/providers
 
-go 1.22
-
-toolchain go1.24.4
+go 1.26.0
 
 require (
 	github.com/aws/aws-sdk-go-v2 v1.38.1
@@ -12,6 +10,7 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/sesv2 v1.52.1
 	github.com/cubewise-code/go-mime v0.0.0-20200519001935-8c5762b177d8
 	github.com/google/uuid v1.6.0
+	golang.org/x/image v0.46.0
 	gopkg.in/gomail.v2 v2.0.0-20160411212932-81ebce5c23df
 )
 
