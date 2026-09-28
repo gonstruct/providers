@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"path"
+	"strings"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
@@ -13,6 +14,10 @@ import (
 
 // URL returns the public URL for a file.
 func (adapter Adapter) URL(path string) string {
+	if adapter.BaseURL != "" {
+		return strings.TrimSuffix(adapter.BaseURL, "/") + "/" + path
+	}
+
 	if adapter.Endpoint != "" {
 		return fmt.Sprintf("%s/%s/%s", adapter.Endpoint, adapter.Bucket, path)
 	}

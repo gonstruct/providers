@@ -16,6 +16,9 @@ type Adapter struct {
 	Bucket          string
 	Endpoint        string
 	UsePathStyle    bool
+	// BaseURL is where the bucket is served publicly, such as a CDN in front
+	// of it. The endpoint is the storage API, which does not serve files.
+	BaseURL string
 }
 
 func (adapter Adapter) NewClient(ctx context.Context) (*s3.Client, error) {
