@@ -13,6 +13,10 @@ func (adapter *Adapter) Send(ctx context.Context, input entities.MailInput) erro
 	_ = ctx // gomail doesn't support context, but we accept it for interface compatibility
 	message := gomail.NewMessage()
 
+	if err := mail.CheckHeaders(input.Envelope.Headers); err != nil {
+		return mail.Err("validate", err)
+	}
+
 	if input.Envelope.Subject != "" {
 		message.SetHeader("Subject", input.Envelope.Subject)
 	} else {

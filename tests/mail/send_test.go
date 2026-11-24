@@ -306,8 +306,13 @@ func TestSend_RendersTextAndMergesHeadersAndConfigurationSet(t *testing.T) {
 	fake := pmail.Fake(
 		pmail.WithFakeTemplates(testTemplatesFS),
 		pmail.WithFakeDefaultEnvelope(mailables.Envelope{
-			From:             mailables.Address("noreply@example.com", "Example App"),
-			Headers:          []mailables.Header{{Name: "X-App", Value: "example"}},
+			From: mailables.Address("noreply@example.com", "Example App"),
+			// Room to spare, so a merge that appended to it would leak into
+			// the next mail.
+			Headers: append(make([]mailables.Header, 0, 4),
+				mailables.Header{Name: "X-App", Value: "example"},
+				mailables.Header{Name: "List-Unsubscribe", Value: "<https://example.com/default>"},
+			),
 			ConfigurationSet: "transactional",
 		}),
 	)
@@ -332,7 +337,10 @@ func TestSend_RendersTextAndMergesHeadersAndConfigurationSet(t *testing.T) {
 	}
 
 	send("First", mailables.Envelope{
-		Headers:          []mailables.Header{{Name: "List-Unsubscribe", Value: "<https://example.com/u/1>"}},
+		Headers: []mailables.Header{
+			{Name: "list-unsubscribe", Value: "<https://example.com/u/1>"},
+			{Name: "X-Entity-Ref-ID", Value: "1"},
+		},
 		ConfigurationSet: "marketing",
 	})
 	send("Second", mailables.Envelope{})
@@ -343,16 +351,25 @@ func TestSend_RendersTextAndMergesHeadersAndConfigurationSet(t *testing.T) {
 		t.Fatalf("Text = %q, want the rendered text view", first.Text)
 	}
 
-	if len(first.Headers) != 2 || first.Headers[0].Name != "X-App" || first.Headers[1].Name != "List-Unsubscribe" {
-		t.Fatalf("Headers = %#v, want the default's then the mail's", first.Headers)
+	wantFirst := []mailables.Header{
+		{Name: "X-App", Value: "example"},
+		{Name: "list-unsubscribe", Value: "<https://example.com/u/1>"},
+		{Name: "X-Entity-Ref-ID", Value: "1"},
+	}
+	if !equalHeaders(first.Headers, wantFirst) {
+		t.Fatalf("Headers = %#v, want the mail's List-Unsubscribe in the default's place, then its own", first.Headers)
 	}
 
 	if first.ConfigurationSet != "marketing" {
 		t.Fatalf("ConfigurationSet = %q, want the mail's own", first.ConfigurationSet)
 	}
 
-	if len(second.Headers) != 1 || second.ConfigurationSet != "transactional" {
-		t.Fatalf("second mail got %#v and %q, want only the default's", second.Headers, second.ConfigurationSet)
+	wantSecond := []mailables.Header{
+		{Name: "X-App", Value: "example"},
+		{Name: "List-Unsubscribe", Value: "<https://example.com/default>"},
+	}
+	if !equalHeaders(second.Headers, wantSecond) || second.ConfigurationSet != "transactional" {
+		t.Fatalf("second mail got %#v and %q, want the default's untouched", second.Headers, second.ConfigurationSet)
 	}
 }
 
@@ -374,4 +391,18 @@ func TestSend_WithoutTextViewSendsHTMLAlone(t *testing.T) {
 	if got := fake.Calls[0].Text; got != "" {
 		t.Fatalf("Text = %q, want none", got)
 	}
+}
+
+func equalHeaders(got, want []mailables.Header) bool {
+	if len(got) != len(want) {
+		return false
+	}
+
+	for index := range got {
+		if got[index] != want[index] {
+			return false
+		}
+	}
+
+	return true
 }

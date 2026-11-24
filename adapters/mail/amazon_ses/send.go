@@ -34,6 +34,10 @@ func (adapter Adapter) Send(ctx context.Context, input entities.MailInput) error
 func buildMessage(input entities.MailInput) (*sesv2.SendEmailInput, error) {
 	message := &sesv2.SendEmailInput{}
 
+	if err := mail.CheckHeaders(input.Envelope.Headers); err != nil {
+		return nil, mail.Err("validate", err)
+	}
+
 	var subject *types.Content
 	if input.Envelope.Subject != "" {
 		subject = &types.Content{

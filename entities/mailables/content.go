@@ -10,10 +10,10 @@ import (
 
 type Content struct {
 	View string
+	With map[string]any
 	// TextView is the plain text version, rendered with the same With and
 	// sent beside the HTML. Without one the mail is HTML alone.
 	TextView string
-	With     map[string]any
 }
 
 func (content Content) Parse(templates embed.FS) (bytes.Buffer, error) {

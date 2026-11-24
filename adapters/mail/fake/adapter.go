@@ -23,16 +23,16 @@ type Adapter struct {
 }
 
 type SendCall struct {
-	To      []string
-	From    string
-	Subject string
-	HTML    string
-	Text    string
-	Headers []mailables.Header
+	To          []string
+	From        string
+	Subject     string
+	HTML        string
+	Attachments int
+	Input       entities.MailInput
+	Text        string
+	Headers     []mailables.Header
 	// ConfigurationSet is the SES configuration set it went out with.
 	ConfigurationSet string
-	Attachments      int
-	Input            entities.MailInput
 }
 
 // New creates a new fake mail adapter.
