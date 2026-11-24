@@ -43,13 +43,7 @@ func (adapter *Adapter) Send(ctx context.Context, input entities.MailInput) erro
 		message.SetHeader("Bcc", input.Envelope.Bcc.String()...)
 	}
 
-	for _, header := range input.Envelope.Headers {
-		message.SetHeader(header.Name, header.Value)
-	}
-
-	if input.Envelope.ConfigurationSet != "" {
-		message.SetHeader("X-SES-CONFIGURATION-SET", input.Envelope.ConfigurationSet)
-	}
+	setExtraHeaders(message, input)
 
 	if len(input.Attachments) > 0 {
 		for _, attachment := range input.Attachments {
@@ -66,14 +60,7 @@ func (adapter *Adapter) Send(ctx context.Context, input entities.MailInput) erro
 		}
 	}
 
-	// With a text version the HTML is its alternative, last, as the one a
-	// client prefers when it can show it.
-	if input.Text.Len() > 0 {
-		message.SetBody("text/plain", input.Text.String())
-		message.AddAlternative("text/html", input.Html.String())
-	} else {
-		message.SetBody("text/html", input.Html.String())
-	}
+	setBody(message, input)
 
 	dialer := gomail.NewDialer(adapter.Host, adapter.Port, adapter.Username, adapter.Password)
 	if err := dialer.DialAndSend(message); err != nil {
@@ -81,4 +68,29 @@ func (adapter *Adapter) Send(ctx context.Context, input entities.MailInput) erro
 	}
 
 	return nil
+}
+
+// setExtraHeaders sets the envelope's own headers, and its SES configuration
+// set as the header SES's SMTP interface reads.
+func setExtraHeaders(message *gomail.Message, input entities.MailInput) {
+	for _, header := range input.Envelope.Headers {
+		message.SetHeader(header.Name, header.Value)
+	}
+
+	if input.Envelope.ConfigurationSet != "" {
+		message.SetHeader("X-SES-CONFIGURATION-SET", input.Envelope.ConfigurationSet)
+	}
+}
+
+// setBody sets the HTML, and with a text version makes the HTML its
+// alternative, last, as the one a client prefers when it can show it.
+func setBody(message *gomail.Message, input entities.MailInput) {
+	if input.Text.Len() > 0 {
+		message.SetBody("text/plain", input.Text.String())
+		message.AddAlternative("text/html", input.Html.String())
+
+		return
+	}
+
+	message.SetBody("text/html", input.Html.String())
 }

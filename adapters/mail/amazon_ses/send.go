@@ -95,7 +95,7 @@ func buildMessage(input entities.MailInput) (*sesv2.SendEmailInput, error) {
 		}
 	}
 
-	var headers []types.MessageHeader
+	headers := make([]types.MessageHeader, 0, len(input.Envelope.Headers))
 	for _, header := range input.Envelope.Headers {
 		headers = append(headers, types.MessageHeader{
 			Name:  aws.String(header.Name),
@@ -108,8 +108,11 @@ func buildMessage(input entities.MailInput) (*sesv2.SendEmailInput, error) {
 			Subject:     subject,
 			Body:        body,
 			Attachments: attachments,
-			Headers:     headers,
 		},
+	}
+
+	if len(headers) > 0 {
+		message.Content.Simple.Headers = headers
 	}
 
 	if input.Envelope.ConfigurationSet != "" {
