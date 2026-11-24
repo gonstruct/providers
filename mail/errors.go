@@ -11,6 +11,7 @@ var (
 	ErrNoSender     = errors.New("no sender specified")
 	ErrNoRecipients = errors.New("no recipients specified")
 	ErrSendFailed   = errors.New("failed to send email")
+	ErrHeader       = errors.New("a header that cannot be sent")
 )
 
 // Err wraps an error with mail context.

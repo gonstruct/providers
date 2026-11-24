@@ -28,12 +28,15 @@ func (a *Adapter) Send(ctx context.Context, input entities.MailInput) error {
 	}
 
 	call := SendCall{
-		To:          to,
-		From:        from,
-		Subject:     envelope.Subject,
-		HTML:        input.Html.String(),
-		Attachments: len(input.Attachments),
-		Input:       input,
+		To:               to,
+		From:             from,
+		Subject:          envelope.Subject,
+		HTML:             input.Html.String(),
+		Text:             input.Text.String(),
+		Headers:          envelope.Headers,
+		ConfigurationSet: envelope.ConfigurationSet,
+		Attachments:      len(input.Attachments),
+		Input:            input,
 	}
 
 	a.mu.Lock()

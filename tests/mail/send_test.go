@@ -13,7 +13,7 @@ import (
 	pmail "github.com/gonstruct/providers/mail"
 )
 
-//go:embed mail/*.html
+//go:embed mail/*
 var testTemplatesFS embed.FS
 
 type testMailable struct {
@@ -301,3 +301,109 @@ func equalStrings(got, want []string) bool {
 }
 
 var _ contracts.Mail = (*capturingAdapter)(nil)
+
+// sendWelcome sends the welcome mail, with its text view, to name.
+func sendWelcome(t *testing.T, name string, envelope mailables.Envelope) {
+	t.Helper()
+
+	envelope.Subject = "Welcome"
+	envelope.To = []*mail.Address{{Address: "user@example.com"}}
+
+	err := pmail.Send(testMailable{
+		envelope: envelope,
+		content: mailables.Content{
+			View:     "welcome.html",
+			TextView: "welcome.txt",
+			With:     map[string]any{"name": name},
+		},
+	})
+	if err != nil {
+		t.Fatalf("Send() error = %v", err)
+	}
+}
+
+func TestSend_RendersTextAndMergesHeadersAndConfigurationSet(t *testing.T) {
+	fake := pmail.Fake(
+		pmail.WithFakeTemplates(testTemplatesFS),
+		pmail.WithFakeDefaultEnvelope(mailables.Envelope{
+			From: mailables.Address("noreply@example.com", "Example App"),
+			// Room to spare, so a merge that appended to it would leak into
+			// the next mail.
+			Headers: append(make([]mailables.Header, 0, 4),
+				mailables.Header{Name: "X-App", Value: "example"},
+				mailables.Header{Name: "List-Unsubscribe", Value: "<https://example.com/default>"},
+			),
+			ConfigurationSet: "transactional",
+		}),
+	)
+
+	sendWelcome(t, "First", mailables.Envelope{
+		Headers: []mailables.Header{
+			{Name: "list-unsubscribe", Value: "<https://example.com/u/1>"},
+			{Name: "X-Entity-Ref-ID", Value: "1"},
+		},
+		ConfigurationSet: "marketing",
+	})
+	sendWelcome(t, "Second", mailables.Envelope{})
+
+	first, second := fake.Calls[0], fake.Calls[1]
+
+	if first.Text != "Hello First\n" {
+		t.Fatalf("Text = %q, want the rendered text view", first.Text)
+	}
+
+	wantFirst := []mailables.Header{
+		{Name: "X-App", Value: "example"},
+		{Name: "list-unsubscribe", Value: "<https://example.com/u/1>"},
+		{Name: "X-Entity-Ref-ID", Value: "1"},
+	}
+	if !equalHeaders(first.Headers, wantFirst) {
+		t.Fatalf("Headers = %#v, want the mail's List-Unsubscribe in the default's place, then its own", first.Headers)
+	}
+
+	if first.ConfigurationSet != "marketing" {
+		t.Fatalf("ConfigurationSet = %q, want the mail's own", first.ConfigurationSet)
+	}
+
+	wantSecond := []mailables.Header{
+		{Name: "X-App", Value: "example"},
+		{Name: "List-Unsubscribe", Value: "<https://example.com/default>"},
+	}
+	if !equalHeaders(second.Headers, wantSecond) || second.ConfigurationSet != "transactional" {
+		t.Fatalf("second mail got %#v and %q, want the default's untouched", second.Headers, second.ConfigurationSet)
+	}
+}
+
+func TestSend_WithoutTextViewSendsHTMLAlone(t *testing.T) {
+	fake := pmail.Fake(pmail.WithFakeTemplates(testTemplatesFS))
+
+	err := pmail.Send(testMailable{
+		envelope: mailables.Envelope{
+			From:    mailables.Address("noreply@example.com", ""),
+			Subject: "Welcome",
+			To:      []*mail.Address{{Address: "user@example.com"}},
+		},
+		content: mailables.Content{View: "welcome.html", With: map[string]any{"name": "User"}},
+	})
+	if err != nil {
+		t.Fatalf("Send() error = %v", err)
+	}
+
+	if got := fake.Calls[0].Text; got != "" {
+		t.Fatalf("Text = %q, want none", got)
+	}
+}
+
+func equalHeaders(got, want []mailables.Header) bool {
+	if len(got) != len(want) {
+		return false
+	}
+
+	for index := range got {
+		if got[index] != want[index] {
+			return false
+		}
+	}
+
+	return true
+}
