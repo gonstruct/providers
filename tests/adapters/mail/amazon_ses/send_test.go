@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
-	"io"
 	"net/http"
 	"net/http/httptest"
 	"net/mail"
@@ -35,10 +34,8 @@ func fakeSES(t *testing.T) *sent {
 
 	request := &sent{}
 	server := httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, incoming *http.Request) {
-		body, _ := io.ReadAll(incoming.Body)
-
-		if err := json.Unmarshal(body, request); err != nil {
-			t.Errorf("SES got a body that is not JSON: %s", body)
+		if err := json.NewDecoder(incoming.Body).Decode(request); err != nil {
+			t.Errorf("SES got a body that is not JSON: %v", err)
 		}
 
 		writer.Header().Set("Content-Type", "application/json")
@@ -63,6 +60,7 @@ func send(t *testing.T, text string, envelope mailables.Envelope) {
 
 	adapter := amazon_ses.Adapter{Region: "eu-west-1", Username: "key", Password: "secret"}
 	input := entities.MailInput{Envelope: envelope, Html: html, Text: plain}
+
 	if err := adapter.Send(context.Background(), input); err != nil {
 		t.Fatalf("Send() error = %v", err)
 	}
