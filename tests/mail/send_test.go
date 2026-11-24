@@ -302,6 +302,26 @@ func equalStrings(got, want []string) bool {
 
 var _ contracts.Mail = (*capturingAdapter)(nil)
 
+// sendWelcome sends the welcome mail, with its text view, to name.
+func sendWelcome(t *testing.T, name string, envelope mailables.Envelope) {
+	t.Helper()
+
+	envelope.Subject = "Welcome"
+	envelope.To = []*mail.Address{{Address: "user@example.com"}}
+
+	err := pmail.Send(testMailable{
+		envelope: envelope,
+		content: mailables.Content{
+			View:     "welcome.html",
+			TextView: "welcome.txt",
+			With:     map[string]any{"name": name},
+		},
+	})
+	if err != nil {
+		t.Fatalf("Send() error = %v", err)
+	}
+}
+
 func TestSend_RendersTextAndMergesHeadersAndConfigurationSet(t *testing.T) {
 	fake := pmail.Fake(
 		pmail.WithFakeTemplates(testTemplatesFS),
@@ -317,33 +337,14 @@ func TestSend_RendersTextAndMergesHeadersAndConfigurationSet(t *testing.T) {
 		}),
 	)
 
-	send := func(name string, envelope mailables.Envelope) {
-		t.Helper()
-
-		envelope.Subject = "Welcome"
-		envelope.To = []*mail.Address{{Address: "user@example.com"}}
-
-		err := pmail.Send(testMailable{
-			envelope: envelope,
-			content: mailables.Content{
-				View:     "welcome.html",
-				TextView: "welcome.txt",
-				With:     map[string]any{"name": name},
-			},
-		})
-		if err != nil {
-			t.Fatalf("Send() error = %v", err)
-		}
-	}
-
-	send("First", mailables.Envelope{
+	sendWelcome(t, "First", mailables.Envelope{
 		Headers: []mailables.Header{
 			{Name: "list-unsubscribe", Value: "<https://example.com/u/1>"},
 			{Name: "X-Entity-Ref-ID", Value: "1"},
 		},
 		ConfigurationSet: "marketing",
 	})
-	send("Second", mailables.Envelope{})
+	sendWelcome(t, "Second", mailables.Envelope{})
 
 	first, second := fake.Calls[0], fake.Calls[1]
 

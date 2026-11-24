@@ -13,10 +13,6 @@ func (adapter *Adapter) Send(ctx context.Context, input entities.MailInput) erro
 	_ = ctx // gomail doesn't support context, but we accept it for interface compatibility
 	message := gomail.NewMessage()
 
-	if err := mail.CheckHeaders(input.Envelope.Headers); err != nil {
-		return mail.Err("validate", err)
-	}
-
 	if input.Envelope.Subject != "" {
 		message.SetHeader("Subject", input.Envelope.Subject)
 	} else {
@@ -47,7 +43,9 @@ func (adapter *Adapter) Send(ctx context.Context, input entities.MailInput) erro
 		message.SetHeader("Bcc", input.Envelope.Bcc.String()...)
 	}
 
-	setExtraHeaders(message, input)
+	if err := setExtraHeaders(message, input); err != nil {
+		return mail.Err("validate", err)
+	}
 
 	if len(input.Attachments) > 0 {
 		for _, attachment := range input.Attachments {
@@ -74,9 +72,14 @@ func (adapter *Adapter) Send(ctx context.Context, input entities.MailInput) erro
 	return nil
 }
 
-// setExtraHeaders sets the envelope's own headers, and its SES configuration
-// set as the header SES's SMTP interface reads.
-func setExtraHeaders(message *gomail.Message, input entities.MailInput) {
+// setExtraHeaders sets the envelope's own headers, once they pass
+// mail.CheckHeaders, and its SES configuration set as the header SES's SMTP
+// interface reads.
+func setExtraHeaders(message *gomail.Message, input entities.MailInput) error {
+	if err := mail.CheckHeaders(input.Envelope.Headers); err != nil {
+		return err
+	}
+
 	for _, header := range input.Envelope.Headers {
 		message.SetHeader(header.Name, header.Value)
 	}
@@ -84,6 +87,8 @@ func setExtraHeaders(message *gomail.Message, input entities.MailInput) {
 	if input.Envelope.ConfigurationSet != "" {
 		message.SetHeader("X-SES-CONFIGURATION-SET", input.Envelope.ConfigurationSet)
 	}
+
+	return nil
 }
 
 // setBody sets the HTML, and with a text version makes the HTML its

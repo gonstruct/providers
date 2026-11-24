@@ -32,6 +32,7 @@ func serve(t *testing.T) *fakeSMTP {
 	if err != nil {
 		t.Fatal(err)
 	}
+
 	t.Cleanup(func() { _ = listener.Close() })
 
 	server := &fakeSMTP{port: listener.Addr().(*net.TCPAddr).Port, message: make(chan *mail.Message, 1)}
@@ -70,6 +71,7 @@ func (server *fakeSMTP) converse(t *testing.T, connection net.Conn) {
 			reply("250 fake")
 		case strings.HasPrefix(command, "RCPT TO:"):
 			server.recipients = append(server.recipients, strings.Trim(strings.TrimSpace(line)[8:], "<>"))
+
 			reply("250 ok")
 		case command == "DATA":
 			reply("354 go on")
@@ -151,6 +153,7 @@ func TestSend_CarriesHeadersTextAndConfigurationSet(t *testing.T) {
 	}
 
 	var body bytes.Buffer
+
 	_, _ = body.ReadFrom(message.Body)
 
 	text, html := strings.Index(body.String(), "Hello"), strings.Index(body.String(), "<p>Hello</p>")
