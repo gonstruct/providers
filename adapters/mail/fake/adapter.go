@@ -5,6 +5,7 @@ import (
 	"sync"
 
 	"github.com/gonstruct/providers/entities"
+	"github.com/gonstruct/providers/entities/mailables"
 )
 
 // Adapter is a fake mail adapter for testing.
@@ -22,12 +23,16 @@ type Adapter struct {
 }
 
 type SendCall struct {
-	To          []string
-	From        string
-	Subject     string
-	HTML        string
-	Attachments int
-	Input       entities.MailInput
+	To      []string
+	From    string
+	Subject string
+	HTML    string
+	Text    string
+	Headers []mailables.Header
+	// ConfigurationSet is the SES configuration set it went out with.
+	ConfigurationSet string
+	Attachments      int
+	Input            entities.MailInput
 }
 
 // New creates a new fake mail adapter.

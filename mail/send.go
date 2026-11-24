@@ -11,7 +11,14 @@ func Send(mailable contracts.Mailable, optionSlice ...Option) error {
 
 	envelope := buildEnvelope(options.DefaultEnvelope, mailable.Envelope())
 
-	content, err := mailable.Content().Parse(options.Templates)
+	view := mailable.Content()
+
+	content, err := view.Parse(options.Templates)
+	if err != nil {
+		return err
+	}
+
+	text, err := view.ParseText(options.Templates)
 	if err != nil {
 		return err
 	}
@@ -20,6 +27,7 @@ func Send(mailable contracts.Mailable, optionSlice ...Option) error {
 		Envelope:    envelope,
 		Attachments: mailable.Attachments(),
 		Html:        content,
+		Text:        text,
 	})
 }
 
@@ -32,6 +40,7 @@ func buildEnvelope(defaultEnvelope *mailables.Envelope, override mailables.Envel
 	base.To = append(base.To[:0:0], defaultEnvelope.To...)
 	base.Cc = append(base.Cc[:0:0], defaultEnvelope.Cc...)
 	base.Bcc = append(base.Bcc[:0:0], defaultEnvelope.Bcc...)
+	base.Headers = append(base.Headers[:0:0], defaultEnvelope.Headers...)
 
 	return base.Merge(override)
 }

@@ -10,8 +10,28 @@ import (
 	"github.com/gonstruct/providers/mail"
 )
 
-//nolint:cyclop,funlen
 func (adapter Adapter) Send(ctx context.Context, input entities.MailInput) error {
+	message, err := buildMessage(input)
+	if err != nil {
+		return err
+	}
+
+	client, err := adapter.NewClient(ctx)
+	if err != nil {
+		return mail.Err("create SES client", err)
+	}
+
+	if _, err := client.SendEmail(ctx, message); err != nil {
+		return mail.Err("send via SES", err)
+	}
+
+	return nil
+}
+
+// buildMessage is the input as SES takes it.
+//
+//nolint:cyclop,funlen
+func buildMessage(input entities.MailInput) (*sesv2.SendEmailInput, error) {
 	message := &sesv2.SendEmailInput{}
 
 	var subject *types.Content
@@ -21,20 +41,20 @@ func (adapter Adapter) Send(ctx context.Context, input entities.MailInput) error
 			Charset: aws.String("UTF-8"),
 		}
 	} else {
-		return mail.Err("validate", mail.ErrNoSubject)
+		return nil, mail.Err("validate", mail.ErrNoSubject)
 	}
 
 	if input.Envelope.From != nil {
 		message.FromEmailAddress = aws.String(input.Envelope.From.String())
 	} else {
-		return mail.Err("validate", mail.ErrNoSender)
+		return nil, mail.Err("validate", mail.ErrNoSender)
 	}
 
 	message.Destination = &types.Destination{}
 	if len(input.Envelope.To) > 0 {
 		message.Destination.ToAddresses = input.Envelope.To.String()
 	} else {
-		return mail.Err("validate", mail.ErrNoRecipients)
+		return nil, mail.Err("validate", mail.ErrNoRecipients)
 	}
 
 	if input.Envelope.ReplyTo != nil {
@@ -62,28 +82,39 @@ func (adapter Adapter) Send(ctx context.Context, input entities.MailInput) error
 		}
 	}
 
+	body := &types.Body{
+		Html: &types.Content{
+			Data:    aws.String(input.Html.String()),
+			Charset: aws.String("UTF-8"),
+		},
+	}
+	if input.Text.Len() > 0 {
+		body.Text = &types.Content{
+			Data:    aws.String(input.Text.String()),
+			Charset: aws.String("UTF-8"),
+		}
+	}
+
+	var headers []types.MessageHeader
+	for _, header := range input.Envelope.Headers {
+		headers = append(headers, types.MessageHeader{
+			Name:  aws.String(header.Name),
+			Value: aws.String(header.Value),
+		})
+	}
+
 	message.Content = &types.EmailContent{
 		Simple: &types.Message{
-			Subject: subject,
-			Body: &types.Body{
-				Html: &types.Content{
-					Data:    aws.String(input.Html.String()),
-					Charset: aws.String("UTF-8"),
-				},
-				// Text: // TODOd: Add text/plain support if needed,
-			},
+			Subject:     subject,
+			Body:        body,
 			Attachments: attachments,
+			Headers:     headers,
 		},
 	}
 
-	client, err := adapter.NewClient(ctx)
-	if err != nil {
-		return mail.Err("create SES client", err)
+	if input.Envelope.ConfigurationSet != "" {
+		message.ConfigurationSetName = aws.String(input.Envelope.ConfigurationSet)
 	}
 
-	if _, err := client.SendEmail(ctx, message); err != nil {
-		return mail.Err("send via SES", err)
-	}
-
-	return nil
+	return message, nil
 }

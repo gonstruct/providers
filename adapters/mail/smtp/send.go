@@ -43,6 +43,14 @@ func (adapter *Adapter) Send(ctx context.Context, input entities.MailInput) erro
 		message.SetHeader("Bcc", input.Envelope.Bcc.String()...)
 	}
 
+	for _, header := range input.Envelope.Headers {
+		message.SetHeader(header.Name, header.Value)
+	}
+
+	if input.Envelope.ConfigurationSet != "" {
+		message.SetHeader("X-SES-CONFIGURATION-SET", input.Envelope.ConfigurationSet)
+	}
+
 	if len(input.Attachments) > 0 {
 		for _, attachment := range input.Attachments {
 			message.Attach(attachment.Name,
@@ -58,7 +66,14 @@ func (adapter *Adapter) Send(ctx context.Context, input entities.MailInput) erro
 		}
 	}
 
-	message.SetBody("text/html", input.Html.String())
+	// With a text version the HTML is its alternative, last, as the one a
+	// client prefers when it can show it.
+	if input.Text.Len() > 0 {
+		message.SetBody("text/plain", input.Text.String())
+		message.AddAlternative("text/html", input.Html.String())
+	} else {
+		message.SetBody("text/html", input.Html.String())
+	}
 
 	dialer := gomail.NewDialer(adapter.Host, adapter.Port, adapter.Username, adapter.Password)
 	if err := dialer.DialAndSend(message); err != nil {
